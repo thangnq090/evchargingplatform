@@ -3,32 +3,27 @@ id: 000-project-bootstrap-1
 unit: 000-project-bootstrap
 intent: 001-ev-charging-mvp
 type: simple-construction-bolt
-status: planned
+status: completed
 stories:
   - 000-001-backend-scaffolding
   - 000-002-frontend-scaffolding
   - 000-003-ci-docker-scaffolding
   - 000-004-jwt-gateway-scaffolding
 created: "2026-07-24T15:00:00Z"
-started: null
-completed: null
+updated: "2026-07-24T23:20:00Z"
+started: "2026-07-24T15:10:00Z"
+completed: "2026-07-24T23:20:00Z"
 current_stage: null
-stages_completed: []
-
-requires_bolts: []
-enables_bolts:
-  - 001-identity-service-1
-  - 002-identity-service-2
-  - 003-identity-service-3
-  - 004-station-management-1
-requires_units: []
-blocks: false
-
-complexity:
-  avg_complexity: 2
-  avg_uncertainty: 1
-  max_dependencies: 0
-  testing_scope: 2
+stages_completed:
+  - name: Plan
+    completed: "2026-07-24T15:15:00Z"
+    artifact: implementation-plan.md
+  - name: Implement
+    completed: "2026-07-24T16:00:00Z"
+    artifact: implementation-walkthrough.md
+  - name: Test
+    completed: "2026-07-24T23:20:00Z"
+    artifact: test-walkthrough.md
 ---
 
 # Bolt: 000-project-bootstrap-1
@@ -47,9 +42,9 @@ Project scaffolding and setup — Maven multi-module backend, React+Vite fronten
 **Stages**: Plan → Implement → Test
 
 ## Stages
-- [ ] **1. Plan**: Pending
-- [ ] **2. Implement**: Pending
-- [ ] **3. Test**: Pending
+- [✅] **1. Plan**: Completed
+- [✅] **2. Implement**: Completed
+- [✅] **3. Test**: Completed
 
 ## Dependencies
 
@@ -58,4 +53,7 @@ Project scaffolding and setup — Maven multi-module backend, React+Vite fronten
 
 ### Enables
 - 001-identity-service-1 (requires project structure)
+- 002-identity-service-2
+- 003-identity-service-3
+- 004-station-management-1
 - All subsequent bolts

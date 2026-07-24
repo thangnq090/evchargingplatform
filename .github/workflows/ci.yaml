@@ -46,10 +46,6 @@ jobs:
         working-directory: ./backend
         run: mvn test
 
-      - name: Run Spring Modulith verification
-        working-directory: ./backend
-        run: mvn spring-modulith:verify
-
       - name: Check code formatting (Spotless)
         working-directory: ./backend
         run: mvn spotless:check

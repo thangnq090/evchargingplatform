@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "skills": {
+    "flyway-migrations": {
+      "source": "rrezartprebreza/spring-boot-skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/spring-boot-4/flyway-migrations/SKILL.md",
+      "computedHash": "616f52b330c606ddff29fe8dda51eea2d04045662392ee125cc9fc733b670699"
+    },
+    "grill-with-docs": {
+      "source": "mattpocock/skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+      "computedHash": "9c460cbd94fd3c63cdef967dbdb6e66ca687103cdc380cd37834e4d10b738f78"
+    },
+    "grilling": {
+      "source": "mattpocock/skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grilling/SKILL.md",
+      "computedHash": "368d3dd7251247c69f3656d93dc83c8f1577792eacac2111f1e7981db2ece49b"
+    },
+    "layered-architecture": {
+      "source": "rrezartprebreza/spring-boot-skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/spring-boot-4/layered-architecture/SKILL.md",
+      "computedHash": "0526c8c65bd5cd2692b007c39d21fbb74a3c4947cb0571d84751b565a3d603b1"
+    },
+    "rest-api-conventions": {
+      "source": "rrezartprebreza/spring-boot-skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/spring-boot-4/rest-api-conventions/SKILL.md",
+      "computedHash": "e9e6856a382584aedc0a16c48a8532f83f0c650f441682add61fae1fda1f053d"
+    },
+    "spring-data-jpa": {
+      "source": "rrezartprebreza/spring-boot-skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/spring-boot-4/spring-data-jpa/SKILL.md",
+      "computedHash": "5c6be64aad5d9e0558148e824590f5f9843b657bc0d9602a03b4d9383aaeb979"
+    },
+    "spring-security-jwt": {
+      "source": "rrezartprebreza/spring-boot-skills",
+      "ref": "main",
+      "sourceType": "github",
+      "skillPath": "skills/spring-boot-4/spring-security-jwt/SKILL.md",
+      "computedHash": "97e262a7056b6d2b14d1911c80fbc9a10b6edc9a4cf62de15918eb1322f989d3"
+    }
+  }
+}

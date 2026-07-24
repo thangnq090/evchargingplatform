@@ -8,7 +8,7 @@ on:
 
 env:
   JAVA_VERSION: '21'
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
   # Backend Build & Test
@@ -129,15 +129,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install pnpm
+        run: npm install -g pnpm@latest
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
           cache-dependency-path: frontend/pnpm-lock.yaml
-
-      - name: Install pnpm
-        run: npm install -g pnpm@latest
 
       - name: Cache pnpm dependencies
         uses: actions/cache@v4

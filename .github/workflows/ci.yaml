@@ -9,7 +9,6 @@ on:
 env:
   JAVA_VERSION: '21'
   NODE_VERSION: '20'
-  MAVEN_OPTS: '-B -V'
 
 jobs:
   # Backend Build & Test

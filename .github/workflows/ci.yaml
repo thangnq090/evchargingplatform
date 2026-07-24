@@ -145,7 +145,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./frontend
-        run: pnpm install --frozen-lockfile=false
+        run: pnpm install --frozen-lockfile=false --dangerously-allow-all-builds
 
       - name: Run frontend linting
         working-directory: ./frontend

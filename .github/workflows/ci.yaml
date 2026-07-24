@@ -305,7 +305,7 @@ jobs:
         with:
           project: 'evcharging-platform'
           path: './backend'
-          format: 'HTML,JSON,XML'
+          format: 'ALL'
           out: 'dependency-check-report'
           args: '--failOnCVSS 7'
 

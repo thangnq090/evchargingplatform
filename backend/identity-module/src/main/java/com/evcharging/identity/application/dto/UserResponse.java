@@ -1,18 +1,21 @@
 package com.evcharging.identity.application.dto;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import com.evcharging.identity.domain.model.Role;
 import com.evcharging.identity.domain.model.User;
 import com.evcharging.identity.domain.model.UserStatus;
-import java.time.Instant;
-import java.util.UUID;
 
 /** Response DTO representing a user returned from registration or lookup. */
 public record UserResponse(
     UUID id,
     String name,
     String email,
+    String phone,
     Role role,
     UUID vendorId,
+    String accountNumber,
     UserStatus status,
     Instant createdAt) {
 
@@ -22,8 +25,10 @@ public record UserResponse(
         user.getId(),
         user.getName(),
         user.getEmail(),
+        user.getPhone(),
         user.getRole(),
         user.getVendorId(),
+        user.getAccountNumber(),
         user.getStatus(),
         user.getCreatedAt());
   }

@@ -29,6 +29,36 @@ class UserTest {
   }
 
   @Nested
+  @DisplayName("createCustomer")
+  class CreateCustomer {
+
+    @Test
+    @DisplayName("creates CUSTOMER with auto-generated account number and phone")
+    void shouldCreateCustomerWithAccountNumber() {
+      User customer =
+          User.createCustomer(
+              "Charlie", "Charlie@Example.com", "hash", "+1234567890", "ACC-12345678");
+
+      assertThat(customer.getId()).isNotNull();
+      assertThat(customer.getEmail()).isEqualTo("charlie@example.com");
+      assertThat(customer.getPhone()).isEqualTo("+1234567890");
+      assertThat(customer.getAccountNumber()).isEqualTo("ACC-12345678");
+      assertThat(customer.getRole()).isEqualTo(Role.CUSTOMER);
+      assertThat(customer.getStatus()).isEqualTo(UserStatus.ACTIVE);
+    }
+
+    @Test
+    @DisplayName("rejects null accountNumber")
+    void shouldRejectNullAccountNumber() {
+      assertThatThrownBy(
+              () ->
+                  User.createCustomer(
+                      "Charlie", "charlie@example.com", "hash", "+1234567890", null))
+          .isInstanceOf(NullPointerException.class);
+    }
+  }
+
+  @Nested
   @DisplayName("createVendorUser")
   class CreateVendorUser {
 
@@ -48,8 +78,7 @@ class UserTest {
     @DisplayName("rejects ADMIN role")
     void shouldRejectAdminRole() {
       var vendorId = java.util.UUID.randomUUID();
-      assertThatThrownBy(
-              () -> User.createVendorUser("x", "x@x.com", "hash", Role.ADMIN, vendorId))
+      assertThatThrownBy(() -> User.createVendorUser("x", "x@x.com", "hash", Role.ADMIN, vendorId))
           .isInstanceOf(IllegalArgumentException.class);
     }
 

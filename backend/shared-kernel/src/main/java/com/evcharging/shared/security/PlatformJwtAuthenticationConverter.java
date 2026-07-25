@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  * Converts JWT tokens to Spring Security Authentication tokens across platform modules.
  *
  * <p>Extracts roles and permissions from JWT claims:
+ *
  * <ul>
  *   <li>{@code realm_access.roles}
  *   <li>{@code resource_access.{client}.roles}

@@ -4,15 +4,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+
 import reactor.core.publisher.Mono;
 
 /**
- * Utility class for security-related operations. Provides methods for extracting user information from
- * JWT tokens in both synchronous and reactive contexts.
+ * Utility class for security-related operations. Provides methods for extracting user information
+ * from JWT tokens in both synchronous and reactive contexts.
  */
 public final class SecurityUtils {
 
@@ -63,7 +65,9 @@ public final class SecurityUtils {
     return getClaim("vendor_id").map(o -> UUID.fromString((String) o));
   }
 
-  /** Reactive helper: Gets the current authenticated user's ID from ReactiveSecurityContextHolder. */
+  /**
+   * Reactive helper: Gets the current authenticated user's ID from ReactiveSecurityContextHolder.
+   */
   public static Mono<UUID> getReactiveUserId() {
     return org.springframework.security.core.context.ReactiveSecurityContextHolder.getContext()
         .map(ctx -> ctx.getAuthentication())

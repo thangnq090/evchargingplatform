@@ -16,8 +16,7 @@ public class Vendor {
   private final Instant createdAt;
   private Instant updatedAt;
 
-  private Vendor(
-      UUID id, String name, VendorStatus status, Instant createdAt, Instant updatedAt) {
+  private Vendor(UUID id, String name, VendorStatus status, Instant createdAt, Instant updatedAt) {
     this.id = id;
     this.name = name;
     this.status = status;

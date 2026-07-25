@@ -1,14 +1,15 @@
 package com.evcharging.identity.infrastructure.persistence;
 
-import com.evcharging.identity.domain.model.Vendor;
-import com.evcharging.identity.domain.repository.VendorRepository;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.stereotype.Repository;
 
+import com.evcharging.identity.domain.model.Vendor;
+import com.evcharging.identity.domain.repository.VendorRepository;
+
 /**
- * Infrastructure adapter implementing the domain {@link VendorRepository} port via Spring Data
- * JPA.
+ * Infrastructure adapter implementing the domain {@link VendorRepository} port via Spring Data JPA.
  */
 @Repository
 class VendorRepositoryAdapter implements VendorRepository {

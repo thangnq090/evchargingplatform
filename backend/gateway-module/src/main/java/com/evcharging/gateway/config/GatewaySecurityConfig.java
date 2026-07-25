@@ -1,9 +1,7 @@
 package com.evcharging.gateway.config;
 
-import com.evcharging.shared.security.PlatformJwtAuthenticationConverter;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +12,11 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.HttpStatusServerEntryPoint;
+
+import com.evcharging.shared.security.PlatformJwtAuthenticationConverter;
+
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 /**
  * Security configuration for Spring Cloud Gateway.
@@ -75,12 +78,11 @@ public class GatewaySecurityConfig {
                     .authenticated())
         .oauth2ResourceServer(
             oauth2 ->
-                oauth2
-                    .jwt(
-                        jwt ->
-                            jwt.jwtAuthenticationConverter(
-                                new ReactiveJwtAuthenticationConverterAdapter(
-                                    new PlatformJwtAuthenticationConverter()))))
+                oauth2.jwt(
+                    jwt ->
+                        jwt.jwtAuthenticationConverter(
+                            new ReactiveJwtAuthenticationConverterAdapter(
+                                new PlatformJwtAuthenticationConverter()))))
         .exceptionHandling(
             ex ->
                 ex.authenticationEntryPoint(

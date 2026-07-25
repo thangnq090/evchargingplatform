@@ -1,6 +1,7 @@
 package com.evcharging.identity.domain.model;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -15,8 +16,10 @@ public class User {
   private String name;
   private final String email;
   private String passwordHash;
+  private final String phone;
   private final Role role;
   private final UUID vendorId;
+  private final String accountNumber;
   private UserStatus status;
   private final Instant createdAt;
   private Instant updatedAt;
@@ -26,8 +29,10 @@ public class User {
       String name,
       String email,
       String passwordHash,
+      String phone,
       Role role,
       UUID vendorId,
+      String accountNumber,
       UserStatus status,
       Instant createdAt,
       Instant updatedAt) {
@@ -35,8 +40,10 @@ public class User {
     this.name = name;
     this.email = email;
     this.passwordHash = passwordHash;
+    this.phone = phone;
     this.role = role;
     this.vendorId = vendorId;
+    this.accountNumber = accountNumber;
     this.status = status;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -56,7 +63,9 @@ public class User {
         name,
         email.toLowerCase(),
         passwordHash,
+        null,
         Role.ADMIN,
+        null,
         null,
         UserStatus.ACTIVE,
         now,
@@ -87,8 +96,37 @@ public class User {
         name,
         email.toLowerCase(),
         passwordHash,
+        null,
         role,
         vendorId,
+        null,
+        UserStatus.ACTIVE,
+        now,
+        now);
+  }
+
+  /**
+   * Create a CUSTOMER user.
+   *
+   * @param name display name
+   * @param email unique email address (stored lowercase)
+   * @param passwordHash BCrypt hash of the plain-text password
+   * @param phone phone number
+   * @param accountNumber auto-generated unique account number
+   */
+  public static User createCustomer(
+      String name, String email, String passwordHash, String phone, String accountNumber) {
+    Objects.requireNonNull(accountNumber, "Customer account number is required");
+    Instant now = Instant.now();
+    return new User(
+        UUID.randomUUID(),
+        name,
+        email.toLowerCase(),
+        passwordHash,
+        phone,
+        Role.CUSTOMER,
+        null,
+        accountNumber,
         UserStatus.ACTIVE,
         now,
         now);
@@ -109,7 +147,35 @@ public class User {
       UserStatus status,
       Instant createdAt,
       Instant updatedAt) {
-    return new User(id, name, email, passwordHash, role, vendorId, status, createdAt, updatedAt);
+    return reconstitute(
+        id, name, email, passwordHash, null, role, vendorId, null, status, createdAt, updatedAt);
+  }
+
+  /** Reconstitute a User with phone and account number from persistence. */
+  public static User reconstitute(
+      UUID id,
+      String name,
+      String email,
+      String passwordHash,
+      String phone,
+      Role role,
+      UUID vendorId,
+      String accountNumber,
+      UserStatus status,
+      Instant createdAt,
+      Instant updatedAt) {
+    return new User(
+        id,
+        name,
+        email,
+        passwordHash,
+        phone,
+        role,
+        vendorId,
+        accountNumber,
+        status,
+        createdAt,
+        updatedAt);
   }
 
   /** Suspend this user. Only permitted if currently ACTIVE. */
@@ -146,12 +212,20 @@ public class User {
     return passwordHash;
   }
 
+  public String getPhone() {
+    return phone;
+  }
+
   public Role getRole() {
     return role;
   }
 
   public UUID getVendorId() {
     return vendorId;
+  }
+
+  public String getAccountNumber() {
+    return accountNumber;
   }
 
   public UserStatus getStatus() {

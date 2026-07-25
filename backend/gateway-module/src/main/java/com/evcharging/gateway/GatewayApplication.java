@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Standalone Spring Boot application for Spring Cloud Gateway.
  *
- * <p>Operates on the reactive WebFlux/Netty stack. Handles API routing, JWT validation,
- * rate limiting, and CORS.
+ * <p>Operates on the reactive WebFlux/Netty stack. Handles API routing, JWT validation, rate
+ * limiting, and CORS.
  */
 @SpringBootApplication
 public class GatewayApplication {

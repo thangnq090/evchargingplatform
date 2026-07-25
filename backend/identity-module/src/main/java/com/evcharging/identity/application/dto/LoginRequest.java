@@ -6,9 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * Request payload for {@code POST /api/v1/identity/auth/login}.
  *
- * @param email    the user's email address
+ * @param email the user's email address
  * @param password the user's raw password (compared against BCrypt hash)
  */
-public record LoginRequest(
-    @NotBlank @Email String email,
-    @NotBlank String password) {}
+public record LoginRequest(@NotBlank @Email String email, @NotBlank String password) {}

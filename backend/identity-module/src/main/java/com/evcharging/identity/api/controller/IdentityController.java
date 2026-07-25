@@ -1,20 +1,10 @@
 package com.evcharging.identity.api.controller;
 
-import com.evcharging.identity.application.dto.AcceptInvitationRequest;
-import com.evcharging.identity.application.dto.AddVendorUserRequest;
-import com.evcharging.identity.application.dto.CreateVendorRequest;
-import com.evcharging.identity.application.dto.CreateVendorResponse;
-import com.evcharging.identity.application.dto.LoginRequest;
-import com.evcharging.identity.application.dto.LoginResponse;
-import com.evcharging.identity.application.dto.RegisterAdminRequest;
-import com.evcharging.identity.application.dto.UserResponse;
-import com.evcharging.identity.application.service.AuthenticationApplicationService;
-import com.evcharging.identity.application.service.UserRegistrationApplicationService;
-import com.evcharging.shared.api.ApiResponse;
-import com.evcharging.shared.security.SecurityUtils;
-import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,13 +12,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.evcharging.identity.application.dto.AcceptInvitationRequest;
+import com.evcharging.identity.application.dto.AddVendorUserRequest;
+import com.evcharging.identity.application.dto.CreateVendorRequest;
+import com.evcharging.identity.application.dto.CreateVendorResponse;
+import com.evcharging.identity.application.dto.LoginRequest;
+import com.evcharging.identity.application.dto.LoginResponse;
+import com.evcharging.identity.application.dto.RegisterAdminRequest;
+import com.evcharging.identity.application.dto.RegisterCustomerRequest;
+import com.evcharging.identity.application.dto.UserResponse;
+import com.evcharging.identity.application.service.AuthenticationApplicationService;
+import com.evcharging.identity.application.service.UserRegistrationApplicationService;
+import com.evcharging.shared.api.ApiResponse;
+import com.evcharging.shared.security.SecurityUtils;
+
 import reactor.core.publisher.Mono;
 
 /**
  * Reactive REST controller for identity & access management (Spring WebFlux).
  *
- * <p>API versioning: {@code /api/v1/identity/}. All responses use the standard
- * {@link ApiResponse} envelope.
+ * <p>API versioning: {@code /api/v1/identity/}. All responses use the standard {@link ApiResponse}
+ * envelope.
  */
 @RestController
 @RequestMapping("/api/v1/identity")
@@ -63,6 +68,23 @@ public class IdentityController {
   }
 
   /**
+   * Register a new customer user.
+   *
+   * <p>Public endpoint — no JWT required.
+   *
+   * <p>{@code POST /api/v1/identity/auth/register-customer}
+   */
+  @PostMapping("/auth/register-customer")
+  Mono<ResponseEntity<ApiResponse<UserResponse>>> registerCustomer(
+      @Valid @RequestBody RegisterCustomerRequest request) {
+    return Mono.fromCallable(() -> registrationService.registerCustomer(request))
+        .map(
+            user ->
+                ResponseEntity.created(URI.create("/api/v1/identity/users/" + user.id()))
+                    .body(ApiResponse.ok(user)));
+  }
+
+  /**
    * Authenticate a user and obtain a JWT access token.
    *
    * <p>Public endpoint — no JWT required.
@@ -70,8 +92,7 @@ public class IdentityController {
    * <p>{@code POST /api/v1/identity/auth/login}
    */
   @PostMapping("/auth/login")
-  Mono<ResponseEntity<ApiResponse<LoginResponse>>> login(
-      @Valid @RequestBody LoginRequest request) {
+  Mono<ResponseEntity<ApiResponse<LoginResponse>>> login(@Valid @RequestBody LoginRequest request) {
     return Mono.fromCallable(() -> authenticationService.login(request))
         .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
   }
@@ -122,8 +143,7 @@ public class IdentityController {
   @PostMapping("/vendors/{vendorId}/users")
   @PreAuthorize("hasRole('VENDOR_ADMIN')")
   Mono<ResponseEntity<ApiResponse<UserResponse>>> addVendorUser(
-      @PathVariable UUID vendorId,
-      @Valid @RequestBody AddVendorUserRequest request) {
+      @PathVariable UUID vendorId, @Valid @RequestBody AddVendorUserRequest request) {
     return Mono.fromCallable(
             () -> {
               UUID callerVendorId =

@@ -1,10 +1,12 @@
 package com.evcharging.identity.infrastructure.persistence;
 
-import com.evcharging.identity.domain.model.Invitation;
-import com.evcharging.identity.domain.repository.InvitationRepository;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.stereotype.Repository;
+
+import com.evcharging.identity.domain.model.Invitation;
+import com.evcharging.identity.domain.repository.InvitationRepository;
 
 /**
  * Infrastructure adapter implementing the domain {@link InvitationRepository} port via Spring Data

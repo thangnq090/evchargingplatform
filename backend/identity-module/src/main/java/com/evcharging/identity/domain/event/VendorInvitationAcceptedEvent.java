@@ -1,7 +1,8 @@
 package com.evcharging.identity.domain.event;
 
-import com.evcharging.identity.domain.model.Role;
 import java.util.UUID;
+
+import com.evcharging.identity.domain.model.Role;
 
 /** Published when an invited user accepts their invitation and registers. */
 public record VendorInvitationAcceptedEvent(

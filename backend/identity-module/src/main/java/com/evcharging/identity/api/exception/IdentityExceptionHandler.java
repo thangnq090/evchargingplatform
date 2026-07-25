@@ -1,8 +1,7 @@
 package com.evcharging.identity.api.exception;
 
-import com.evcharging.identity.api.controller.IdentityController;
-import com.evcharging.shared.api.ApiResponse;
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,9 +13,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.evcharging.identity.api.controller.IdentityController;
+import com.evcharging.shared.api.ApiResponse;
+
 /** Global exception handler for the identity module WebFlux REST layer. */
-@RestControllerAdvice(
-        assignableTypes = { IdentityController.class })
+@RestControllerAdvice(assignableTypes = {IdentityController.class})
 class IdentityExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(IdentityExceptionHandler.class);
@@ -24,9 +25,7 @@ class IdentityExceptionHandler {
   @ExceptionHandler(WebExchangeBindException.class)
   ResponseEntity<ApiResponse<Void>> handleWebExchangeValidation(WebExchangeBindException ex) {
     List<String> details =
-        ex.getBindingResult().getFieldErrors().stream()
-            .map(FieldError::getDefaultMessage)
-            .toList();
+        ex.getBindingResult().getFieldErrors().stream().map(FieldError::getDefaultMessage).toList();
     return ResponseEntity.badRequest()
         .body(ApiResponse.error("VALIDATION_FAILED", "Request validation failed", details));
   }
@@ -40,13 +39,15 @@ class IdentityExceptionHandler {
   @ExceptionHandler(ResponseStatusException.class)
   ResponseEntity<ApiResponse<Void>> handleResponseStatus(ResponseStatusException ex) {
     return ResponseEntity.status(ex.getStatusCode())
-        .body(ApiResponse.error(ex.getStatusCode().toString(), ex.getReason() != null ? ex.getReason() : ex.getMessage()));
+        .body(
+            ApiResponse.error(
+                ex.getStatusCode().toString(),
+                ex.getReason() != null ? ex.getReason() : ex.getMessage()));
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
   ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
-    return ResponseEntity.badRequest()
-        .body(ApiResponse.error("BAD_REQUEST", ex.getMessage()));
+    return ResponseEntity.badRequest().body(ApiResponse.error("BAD_REQUEST", ex.getMessage()));
   }
 
   @ExceptionHandler(IllegalStateException.class)

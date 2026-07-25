@@ -29,6 +29,7 @@ import com.evcharging.identity.domain.model.*;
 import com.evcharging.identity.domain.repository.InvitationRepository;
 import com.evcharging.identity.domain.repository.UserRepository;
 import com.evcharging.identity.domain.repository.VendorRepository;
+import com.evcharging.shared.kernel.MarkupPercentage;
 
 @DisplayName("UserRegistrationApplicationService Tests")
 @ExtendWith(MockitoExtension.class)
@@ -149,7 +150,12 @@ class UserRegistrationApplicationServiceTest {
       UUID vendorId = UUID.randomUUID();
       Vendor savedVendor =
           Vendor.reconstitute(
-              vendorId, "ACME Corp", VendorStatus.ACTIVE, Instant.now(), Instant.now());
+              vendorId,
+              "ACME Corp",
+              VendorStatus.ACTIVE,
+              MarkupPercentage.zero(),
+              Instant.now(),
+              Instant.now());
       given(vendorRepository.save(any(Vendor.class))).willReturn(savedVendor);
 
       Invitation savedInvitation =

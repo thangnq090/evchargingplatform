@@ -3,6 +3,8 @@ package com.evcharging.identity.domain.model;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.evcharging.shared.kernel.MarkupPercentage;
+
 /**
  * Domain aggregate root for a Vendor organization.
  *
@@ -13,19 +15,27 @@ public class Vendor {
   private final UUID id;
   private final String name;
   private VendorStatus status;
+  private MarkupPercentage markupPercentage;
   private final Instant createdAt;
   private Instant updatedAt;
 
-  private Vendor(UUID id, String name, VendorStatus status, Instant createdAt, Instant updatedAt) {
+  private Vendor(
+      UUID id,
+      String name,
+      VendorStatus status,
+      MarkupPercentage markupPercentage,
+      Instant createdAt,
+      Instant updatedAt) {
     this.id = id;
     this.name = name;
     this.status = status;
+    this.markupPercentage = markupPercentage;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
 
   /**
-   * Create a new active Vendor.
+   * Create a new active Vendor with default zero markup.
    *
    * @param name unique vendor display name
    */
@@ -34,7 +44,8 @@ public class Vendor {
       throw new IllegalArgumentException("Vendor name must not be blank");
     }
     Instant now = Instant.now();
-    return new Vendor(UUID.randomUUID(), name, VendorStatus.ACTIVE, now, now);
+    return new Vendor(
+        UUID.randomUUID(), name, VendorStatus.ACTIVE, MarkupPercentage.zero(), now, now);
   }
 
   /**
@@ -43,8 +54,13 @@ public class Vendor {
    * <p>For use by infrastructure adapters only.
    */
   public static Vendor reconstitute(
-      UUID id, String name, VendorStatus status, Instant createdAt, Instant updatedAt) {
-    return new Vendor(id, name, status, createdAt, updatedAt);
+      UUID id,
+      String name,
+      VendorStatus status,
+      MarkupPercentage markupPercentage,
+      Instant createdAt,
+      Instant updatedAt) {
+    return new Vendor(id, name, status, markupPercentage, createdAt, updatedAt);
   }
 
   /** Suspend the vendor. Only allowed if currently ACTIVE. */
@@ -53,6 +69,12 @@ public class Vendor {
       throw new IllegalStateException("Only ACTIVE vendors can be suspended");
     }
     this.status = VendorStatus.SUSPENDED;
+    this.updatedAt = Instant.now();
+  }
+
+  /** Updates the vendor's markup percentage. */
+  public void setMarkupPercentage(MarkupPercentage markupPercentage) {
+    this.markupPercentage = markupPercentage;
     this.updatedAt = Instant.now();
   }
 
@@ -66,6 +88,10 @@ public class Vendor {
 
   public VendorStatus getStatus() {
     return status;
+  }
+
+  public MarkupPercentage getMarkupPercentage() {
+    return markupPercentage;
   }
 
   public Instant getCreatedAt() {

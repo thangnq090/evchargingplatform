@@ -3,7 +3,7 @@ package com.evcharging.station;
 /**
  * Spring Modulith module descriptor for Station Management module.
  *
- * <p>This module handles: - Station registry and metadata - Connector management and types -
- * Station health monitoring - Firmware management - Geospatial queries (PostGIS)
+ * <p>Handles station registry and metadata, connector management, geospatial queries (PostGIS), and
+ * vendor markup configuration.
  */
 public interface StationModule {}

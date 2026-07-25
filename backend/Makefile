@@ -26,7 +26,7 @@ checkstyle: ## Run Checkstyle
 	$(MAVEN) checkstyle:check
 
 coverage: ## Generate JaCoCo coverage report
-	$(MAVEN) jacoco:report
+	$(MAVEN) test jacoco:report
 
 archunit: ## Run architecture tests only
 	$(MAVEN) test -pl evcharging-app -Dtest="ArchitectureTest"

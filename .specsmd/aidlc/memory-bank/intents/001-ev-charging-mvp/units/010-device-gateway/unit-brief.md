@@ -2,9 +2,9 @@
 unit: 010-device-gateway
 intent: 001-ev-charging-mvp
 phase: inception
-status: draft
+status: stories-defined
 created: "2026-07-24T15:00:00Z"
-updated: "2026-07-24T15:00:00Z"
+updated: "2026-07-25T15:00:00Z"
 ---
 
 # Unit Brief: Device Gateway

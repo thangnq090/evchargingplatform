@@ -40,6 +40,10 @@ class VendorDbEntity implements Persistable<UUID> {
   @Column(nullable = false)
   private VendorStatus status;
 
+  /** Platform markup in basis points (1 BP = 0.01%). Defaults to 0. */
+  @Column(name = "markup_basis_points", nullable = false)
+  private int markupBasisPoints = 0;
+
   @CreationTimestamp
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
@@ -65,6 +69,7 @@ class VendorDbEntity implements Persistable<UUID> {
     entity.id = vendor.getId();
     entity.name = vendor.getName();
     entity.status = vendor.getStatus();
+    entity.markupBasisPoints = vendor.getMarkupPercentage().getBasisPoints();
     entity.createdAt = vendor.getCreatedAt();
     entity.updatedAt = vendor.getUpdatedAt();
     entity.isNew = isNew;
@@ -72,6 +77,12 @@ class VendorDbEntity implements Persistable<UUID> {
   }
 
   Vendor toDomain() {
-    return Vendor.reconstitute(id, name, status, createdAt, updatedAt);
+    return Vendor.reconstitute(
+        id,
+        name,
+        status,
+        com.evcharging.shared.kernel.MarkupPercentage.of(markupBasisPoints),
+        createdAt,
+        updatedAt);
   }
 }

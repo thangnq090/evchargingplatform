@@ -2,9 +2,9 @@
 unit: 002-station-management
 intent: 001-ev-charging-mvp
 phase: inception
-status: draft
-created: "2026-07-24T15:00:00Z"
-updated: "2026-07-24T15:00:00Z"
+status: complete
+created: '2026-07-24T15:00:00Z'
+updated: '2026-07-25T15:00:00Z'
 ---
 
 # Unit Brief: Station Management

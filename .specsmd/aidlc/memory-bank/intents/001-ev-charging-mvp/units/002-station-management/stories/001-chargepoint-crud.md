@@ -1,3 +1,13 @@
+---
+unit: 002-station-management
+intent: 001-ev-charging-mvp
+phase: construction
+status: complete
+implemented: true
+created: "2026-07-24T15:00:00Z"
+updated: "2026-07-26T10:35:00Z"
+---
+
 # Story: Chargepoint CRUD with Geospatial Location
 
 ## User Story

@@ -11,7 +11,7 @@ import com.evcharging.identity.domain.repository.VendorRepository;
 /**
  * Infrastructure adapter implementing the domain {@link VendorRepository} port via Spring Data JPA.
  */
-@Repository
+@Repository("identityVendorRepositoryAdapter")
 class VendorRepositoryAdapter implements VendorRepository {
 
   private final SpringDataVendorRepository jpa;

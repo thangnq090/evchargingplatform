@@ -156,8 +156,7 @@ public class IdentityController {
   Mono<ResponseEntity<ApiResponse<UserResponse>>> addVendorUser(
       @PathVariable UUID vendorId, @Valid @RequestBody AddVendorUserRequest request) {
     return SecurityUtils.getReactiveVendorId()
-        .switchIfEmpty(
-            Mono.error(new IllegalStateException("vendor_id claim missing from JWT")))
+        .switchIfEmpty(Mono.error(new IllegalStateException("vendor_id claim missing from JWT")))
         .flatMap(
             callerVendorId -> {
               if (!callerVendorId.equals(vendorId)) {
@@ -168,7 +167,9 @@ public class IdentityController {
                   .switchIfEmpty(
                       Mono.error(new IllegalStateException("sub claim missing from JWT")));
             })
-        .flatMap(callerId -> Mono.fromCallable(() -> registrationService.addVendorUser(callerId, request)))
+        .flatMap(
+            callerId ->
+                Mono.fromCallable(() -> registrationService.addVendorUser(callerId, request)))
         .map(
             user ->
                 ResponseEntity.created(URI.create("/api/v1/identity/users/" + user.id()))
@@ -191,7 +192,8 @@ public class IdentityController {
       @PathVariable UUID userId) {
     return SecurityUtils.getReactiveUserId()
         .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
-        .flatMap(adminId -> Mono.fromCallable(() -> credentialService.resetPassword(userId, adminId)))
+        .flatMap(
+            adminId -> Mono.fromCallable(() -> credentialService.resetPassword(userId, adminId)))
         .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
   }
 
@@ -207,7 +209,13 @@ public class IdentityController {
       @Valid @RequestBody ChangePasswordRequest request) {
     return SecurityUtils.getReactiveUserId()
         .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
-        .flatMap(userId -> Mono.fromCallable(() -> { credentialService.changePassword(userId, request); return null; }))
+        .flatMap(
+            userId ->
+                Mono.fromCallable(
+                    () -> {
+                      credentialService.changePassword(userId, request);
+                      return null;
+                    }))
         .map(response -> ResponseEntity.ok(ApiResponse.ok(null)));
   }
 

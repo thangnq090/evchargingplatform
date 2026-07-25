@@ -59,10 +59,36 @@
             <artifactId>hibernate-spatial</artifactId>
         </dependency>
 
+        <!-- Identity Module (published API interfaces only) -->
+        <dependency>
+            <groupId>com.evcharging</groupId>
+            <artifactId>identity-module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- Flyway -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <!-- Spring Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Caffeine (in-memory cache for MVP markup cache) -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
+        <!-- Redis (optional - for future distributed cache) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- MapStruct -->

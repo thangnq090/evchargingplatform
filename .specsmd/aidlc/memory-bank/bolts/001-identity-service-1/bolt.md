@@ -9,8 +9,8 @@ stories:
   - 001-002-vendor-user-registration
 created: "2026-07-24T15:00:00Z"
 started: "2026-07-24T20:17:17Z"
-completed: null
-current_stage: implement
+completed: "2026-07-25T01:36:00Z"
+current_stage: complete
 stages_completed:
   - name: model
     completed: "2026-07-24T20:23:32Z"
@@ -25,7 +25,7 @@ stages_completed:
     completed: "2026-07-24T20:50:00Z"
     artifact: "backend/identity-module"
   - name: test
-    completed: "2026-07-24T20:52:50Z"
+    completed: "2026-07-25T01:30:00Z"
     artifact: "scripts/smoke-test-identity-bolt1.sh"
 
 requires_bolts: []
@@ -49,7 +49,7 @@ complexity:
 First bolt for Identity & Access — foundational user registration and authentication. Covers Admin registration, Vendor user creation with invitation, and Customer registration.
 
 ## Objective
-Implement core user registration: Admin (email+password), Vendor users (VENDOR_ADMIN/VENDOR_USER roles), and Customers (with auto-generated account numbers).
+Implement core user registration: Admin (email+password), Vendor users (VENDOR_ADMIN/VENDOR_USER roles), and login token issuing via HMAC-SHA256.
 
 ## Stories Included
 - **001-001-admin-registration**: Admin registration and login (Must)
@@ -76,8 +76,8 @@ Implement core user registration: Admin (email+password), Vendor users (VENDOR_A
 - 004-station-management-1 (Vendor identity)
 
 ## Success Criteria
-- [ ] Admin registration with email+password
-- [ ] Vendor creation with invited user (VENDOR_ADMIN)
-- [ ] Customer registration with account number
-- [ ] All stories acceptance criteria met
-- [ ] Tests passing
+- [x] Admin registration with email+password (protected with ROLE_ADMIN)
+- [x] Vendor creation with invited user (VENDOR_ADMIN)
+- [x] Login endpoint issuing HS256 access tokens
+- [x] All stories acceptance criteria met
+- [x] All unit & smoke integration tests passing

@@ -155,23 +155,20 @@ public class IdentityController {
   @PreAuthorize("hasRole('VENDOR_ADMIN')")
   Mono<ResponseEntity<ApiResponse<UserResponse>>> addVendorUser(
       @PathVariable UUID vendorId, @Valid @RequestBody AddVendorUserRequest request) {
-    return Mono.fromCallable(
-            () -> {
-              UUID callerVendorId =
-                  SecurityUtils.getCurrentVendorId()
-                      .orElseThrow(
-                          () -> new IllegalStateException("vendor_id claim missing from JWT"));
-
+    return SecurityUtils.getReactiveVendorId()
+        .switchIfEmpty(
+            Mono.error(new IllegalStateException("vendor_id claim missing from JWT")))
+        .flatMap(
+            callerVendorId -> {
               if (!callerVendorId.equals(vendorId)) {
-                throw new IllegalArgumentException("Cannot add users to a different vendor");
+                return Mono.error(
+                    new IllegalArgumentException("Cannot add users to a different vendor"));
               }
-
-              UUID callerId =
-                  SecurityUtils.getCurrentUserId()
-                      .orElseThrow(() -> new IllegalStateException("sub claim missing from JWT"));
-
-              return registrationService.addVendorUser(callerId, request);
+              return SecurityUtils.getReactiveUserId()
+                  .switchIfEmpty(
+                      Mono.error(new IllegalStateException("sub claim missing from JWT")));
             })
+        .flatMap(callerId -> Mono.fromCallable(() -> registrationService.addVendorUser(callerId, request)))
         .map(
             user ->
                 ResponseEntity.created(URI.create("/api/v1/identity/users/" + user.id()))
@@ -192,13 +189,9 @@ public class IdentityController {
   @PreAuthorize("hasRole('ADMIN')")
   Mono<ResponseEntity<ApiResponse<PasswordResetResponse>>> resetPassword(
       @PathVariable UUID userId) {
-    return Mono.fromCallable(
-            () -> {
-              UUID adminId =
-                  SecurityUtils.getCurrentUserId()
-                      .orElseThrow(() -> new IllegalStateException("sub claim missing from JWT"));
-              return credentialService.resetPassword(userId, adminId);
-            })
+    return SecurityUtils.getReactiveUserId()
+        .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
+        .flatMap(adminId -> Mono.fromCallable(() -> credentialService.resetPassword(userId, adminId)))
         .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
   }
 
@@ -212,14 +205,9 @@ public class IdentityController {
   @PostMapping("/users/me/password")
   Mono<ResponseEntity<ApiResponse<Void>>> changePassword(
       @Valid @RequestBody ChangePasswordRequest request) {
-    return Mono.fromCallable(
-            () -> {
-              UUID userId =
-                  SecurityUtils.getCurrentUserId()
-                      .orElseThrow(() -> new IllegalStateException("sub claim missing from JWT"));
-              credentialService.changePassword(userId, request);
-              return null;
-            })
+    return SecurityUtils.getReactiveUserId()
+        .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
+        .flatMap(userId -> Mono.fromCallable(() -> { credentialService.changePassword(userId, request); return null; }))
         .map(response -> ResponseEntity.ok(ApiResponse.ok(null)));
   }
 
@@ -252,13 +240,9 @@ public class IdentityController {
    */
   @PostMapping("/auth/logout")
   Mono<ResponseEntity<Void>> logout() {
-    return Mono.fromRunnable(
-            () -> {
-              UUID userId =
-                  SecurityUtils.getCurrentUserId()
-                      .orElseThrow(() -> new IllegalStateException("sub claim missing from JWT"));
-              refreshTokenService.logout(userId);
-            })
+    return SecurityUtils.getReactiveUserId()
+        .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
+        .flatMap(userId -> Mono.fromRunnable(() -> refreshTokenService.logout(userId)))
         .then(Mono.just(ResponseEntity.noContent().<Void>build()));
   }
 }

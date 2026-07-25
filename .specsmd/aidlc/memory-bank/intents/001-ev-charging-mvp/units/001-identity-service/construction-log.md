@@ -2,7 +2,7 @@
 unit: 001-identity-service
 intent: 001-ev-charging-mvp
 created: "2026-07-24T20:17:17Z"
-last_updated: "2026-07-25T01:36:00Z"
+last_updated: "2026-07-25T16:05:00Z"
 ---
 
 # Construction Log: 001-identity-service
@@ -28,8 +28,8 @@ last_updated: "2026-07-25T01:36:00Z"
 | Bolt ID | Stories | Status | Changed |
 |---------|---------|--------|---------|
 | 001-identity-service-1 | 001-001-admin-registration, 001-002-vendor-user-registration | ✅ completed | - |
-| 002-identity-service-2 | 001-003-customer-registration, 001-004-jwt-authentication | [ ] planned | - |
-| 003-identity-service-3 | 001-005-rbac-credentials | [ ] planned | - |
+| 002-identity-service-2 | 001-003-customer-registration, 001-004-jwt-authentication | ✅ completed | - |
+| 003-identity-service-3 | 001-005-rbac-credentials | 🔄 in-progress | - |
 
 ## Execution History
 
@@ -41,6 +41,9 @@ last_updated: "2026-07-25T01:36:00Z"
 | 2026-07-24 | 3 | Complete | Checked ADR index — no new ADRs required |
 | 2026-07-24 | 4 | Complete | Implemented domain, application, infrastructure, and presentation layers |
 | 2026-07-25 | 5 | Complete | Added HMAC-SHA256 JWT login, Persistable entity lifecycle fixes, shared-kernel authority converter, and `smoke-test-identity-bolt1.sh` |
+| 2026-07-25T15:45:00Z | 002-identity-service-2 | complete | Customer registration with auto-generated account numbers (`ACC-XXXXXXXX`), phone mapping, `POST /api/v1/identity/auth/register-customer` endpoint, HMAC-SHA256 token claims with `account_number`, and `smoke-test-identity-bolt2.sh` |
+| 2026-07-25T07:18:00Z | 003-identity-service-3 | started | Stage 1: Domain Model |
+| 2026-07-25T07:45:00Z | 003-identity-service-3 | stage-complete | Stage 3: ADR Analysis complete -> Stage 4: Implement |
 
 ## Code Changes
 
@@ -65,9 +68,9 @@ last_updated: "2026-07-25T01:36:00Z"
 |--------|-------|
 | Original bolts planned | 3 |
 | Current bolt count | 3 |
-| Bolts completed | 1 |
-| Bolts in progress | 0 |
-| Bolts remaining | 2 |
+| Bolts completed | 2 |
+| Bolts in progress | 1 |
+| Bolts remaining | 0 |
 | Replanning events | 0 |
 
 ## Notes

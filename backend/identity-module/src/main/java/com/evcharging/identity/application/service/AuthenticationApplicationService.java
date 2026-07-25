@@ -26,14 +26,17 @@ public class AuthenticationApplicationService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final TokenIssuerPort tokenIssuerPort;
+  private final RefreshTokenApplicationService refreshTokenApplicationService;
 
   public AuthenticationApplicationService(
       UserRepository userRepository,
       PasswordEncoder passwordEncoder,
-      TokenIssuerPort tokenIssuerPort) {
+      TokenIssuerPort tokenIssuerPort,
+      RefreshTokenApplicationService refreshTokenApplicationService) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.tokenIssuerPort = tokenIssuerPort;
+    this.refreshTokenApplicationService = refreshTokenApplicationService;
   }
 
   /**
@@ -44,6 +47,12 @@ public class AuthenticationApplicationService {
    * @throws ResponseStatusException 401 if credentials are invalid, 403 if account is inactive
    */
   public LoginResponse login(LoginRequest request) {
+    return login(request, null, null);
+  }
+
+  /** Authenticate a user and issue JWT tokens with userAgent/IP headers. */
+  @org.springframework.transaction.annotation.Transactional
+  public LoginResponse login(LoginRequest request, String userAgent, String ip) {
     String email = request.email().toLowerCase();
 
     User user =
@@ -60,12 +69,25 @@ public class AuthenticationApplicationService {
       throw new BadCredentialsException("Invalid email or password");
     }
 
-    if (user.getStatus() != UserStatus.ACTIVE) {
+    if (user.getStatus() != UserStatus.ACTIVE
+        && user.getStatus() != UserStatus.PASSWORD_RESET_REQUIRED) {
       log.warn("Login failed — account not active: {} status={}", email, user.getStatus());
       throw new IllegalStateException("Account is not active");
     }
 
     log.info("Login successful: userId={}, role={}", user.getId(), user.getRole());
-    return tokenIssuerPort.issue(user);
+    LoginResponse baseResponse = tokenIssuerPort.issue(user);
+
+    // Issue refresh token
+    String refreshToken = refreshTokenApplicationService.issueOnLogin(user.getId(), userAgent, ip);
+
+    return new LoginResponse(
+        baseResponse.accessToken(),
+        baseResponse.expiresIn(),
+        baseResponse.userId(),
+        baseResponse.role(),
+        baseResponse.vendorId(),
+        refreshToken,
+        user.isMustChangePassword());
   }
 }

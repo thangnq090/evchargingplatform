@@ -10,6 +10,9 @@ help: ## Show this help
 build: ## Compile without tests
 	$(MAVEN) clean compile -DskipTests
 
+install: ## Compile install local repo
+	$(MAVEN) clean install -DskipTests
+
 test: ## Run unit tests
 	$(MAVEN) test
 

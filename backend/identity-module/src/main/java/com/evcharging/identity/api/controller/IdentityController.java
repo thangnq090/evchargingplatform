@@ -15,14 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.evcharging.identity.application.dto.AcceptInvitationRequest;
 import com.evcharging.identity.application.dto.AddVendorUserRequest;
+import com.evcharging.identity.application.dto.ChangePasswordRequest;
 import com.evcharging.identity.application.dto.CreateVendorRequest;
 import com.evcharging.identity.application.dto.CreateVendorResponse;
 import com.evcharging.identity.application.dto.LoginRequest;
 import com.evcharging.identity.application.dto.LoginResponse;
+import com.evcharging.identity.application.dto.PasswordResetResponse;
+import com.evcharging.identity.application.dto.RefreshTokenRequest;
 import com.evcharging.identity.application.dto.RegisterAdminRequest;
 import com.evcharging.identity.application.dto.RegisterCustomerRequest;
 import com.evcharging.identity.application.dto.UserResponse;
 import com.evcharging.identity.application.service.AuthenticationApplicationService;
+import com.evcharging.identity.application.service.CredentialManagementApplicationService;
+import com.evcharging.identity.application.service.RefreshTokenApplicationService;
 import com.evcharging.identity.application.service.UserRegistrationApplicationService;
 import com.evcharging.shared.api.ApiResponse;
 import com.evcharging.shared.security.SecurityUtils;
@@ -41,12 +46,18 @@ public class IdentityController {
 
   private final UserRegistrationApplicationService registrationService;
   private final AuthenticationApplicationService authenticationService;
+  private final CredentialManagementApplicationService credentialService;
+  private final RefreshTokenApplicationService refreshTokenService;
 
   IdentityController(
       UserRegistrationApplicationService registrationService,
-      AuthenticationApplicationService authenticationService) {
+      AuthenticationApplicationService authenticationService,
+      CredentialManagementApplicationService credentialService,
+      RefreshTokenApplicationService refreshTokenService) {
     this.registrationService = registrationService;
     this.authenticationService = authenticationService;
+    this.credentialService = credentialService;
+    this.refreshTokenService = refreshTokenService;
   }
 
   /**
@@ -144,26 +155,94 @@ public class IdentityController {
   @PreAuthorize("hasRole('VENDOR_ADMIN')")
   Mono<ResponseEntity<ApiResponse<UserResponse>>> addVendorUser(
       @PathVariable UUID vendorId, @Valid @RequestBody AddVendorUserRequest request) {
-    return Mono.fromCallable(
-            () -> {
-              UUID callerVendorId =
-                  SecurityUtils.getCurrentVendorId()
-                      .orElseThrow(
-                          () -> new IllegalStateException("vendor_id claim missing from JWT"));
-
+    return SecurityUtils.getReactiveVendorId()
+        .switchIfEmpty(
+            Mono.error(new IllegalStateException("vendor_id claim missing from JWT")))
+        .flatMap(
+            callerVendorId -> {
               if (!callerVendorId.equals(vendorId)) {
-                throw new IllegalArgumentException("Cannot add users to a different vendor");
+                return Mono.error(
+                    new IllegalArgumentException("Cannot add users to a different vendor"));
               }
-
-              UUID callerId =
-                  SecurityUtils.getCurrentUserId()
-                      .orElseThrow(() -> new IllegalStateException("sub claim missing from JWT"));
-
-              return registrationService.addVendorUser(callerId, request);
+              return SecurityUtils.getReactiveUserId()
+                  .switchIfEmpty(
+                      Mono.error(new IllegalStateException("sub claim missing from JWT")));
             })
+        .flatMap(callerId -> Mono.fromCallable(() -> registrationService.addVendorUser(callerId, request)))
         .map(
             user ->
                 ResponseEntity.created(URI.create("/api/v1/identity/users/" + user.id()))
                     .body(ApiResponse.ok(user)));
+  }
+
+  // ==================== RBAC & Credential Management Endpoints ====================
+
+  /**
+   * Reset a user's password (Admin only).
+   *
+   * <p>Requires {@code ROLE_ADMIN}. Generates a temporary password and forces the user to change it
+   * on next login.
+   *
+   * <p>{@code POST /api/v1/identity/users/{userId}/password/reset}
+   */
+  @PostMapping("/users/{userId}/password/reset")
+  @PreAuthorize("hasRole('ADMIN')")
+  Mono<ResponseEntity<ApiResponse<PasswordResetResponse>>> resetPassword(
+      @PathVariable UUID userId) {
+    return SecurityUtils.getReactiveUserId()
+        .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
+        .flatMap(adminId -> Mono.fromCallable(() -> credentialService.resetPassword(userId, adminId)))
+        .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
+  }
+
+  /**
+   * Change own password.
+   *
+   * <p>Any authenticated user can change their own password.
+   *
+   * <p>{@code POST /api/v1/identity/users/me/password}
+   */
+  @PostMapping("/users/me/password")
+  Mono<ResponseEntity<ApiResponse<Void>>> changePassword(
+      @Valid @RequestBody ChangePasswordRequest request) {
+    return SecurityUtils.getReactiveUserId()
+        .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
+        .flatMap(userId -> Mono.fromCallable(() -> { credentialService.changePassword(userId, request); return null; }))
+        .map(response -> ResponseEntity.ok(ApiResponse.ok(null)));
+  }
+
+  /**
+   * Refresh access token.
+   *
+   * <p>Public endpoint — no JWT required. The refresh token serves as the credential. Implements
+   * token rotation with reuse detection.
+   *
+   * <p>{@code POST /api/v1/identity/auth/refresh}
+   */
+  @PostMapping("/auth/refresh")
+  Mono<ResponseEntity<ApiResponse<LoginResponse>>> refreshToken(
+      @Valid @RequestBody RefreshTokenRequest request) {
+    return Mono.fromCallable(
+            () ->
+                refreshTokenService.refresh(
+                    request.refreshToken(),
+                    null, // userAgent - would need ServerHttpRequest
+                    null)) // ipAddress
+        .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
+  }
+
+  /**
+   * Logout and revoke all refresh tokens.
+   *
+   * <p>Authenticated endpoint — revokes all active refresh tokens for the calling user.
+   *
+   * <p>{@code POST /api/v1/identity/auth/logout}
+   */
+  @PostMapping("/auth/logout")
+  Mono<ResponseEntity<Void>> logout() {
+    return SecurityUtils.getReactiveUserId()
+        .switchIfEmpty(Mono.error(new IllegalStateException("sub claim missing from JWT")))
+        .flatMap(userId -> Mono.fromRunnable(() -> refreshTokenService.logout(userId)))
+        .then(Mono.just(ResponseEntity.noContent().<Void>build()));
   }
 }

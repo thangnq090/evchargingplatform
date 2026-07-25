@@ -3,15 +3,21 @@ id: 006-billing-pricing-1
 unit: 004-billing-pricing
 intent: 001-ev-charging-mvp
 type: ddd-construction-bolt
-status: planned
+status: in-progress
 stories:
   - 004-001-cost-calculation
   - 004-002-income-reporting
 created: "2026-07-24T15:00:00Z"
-started: null
+started: "2026-07-26T03:55:00+12:00"
 completed: null
-current_stage: null
-stages_completed: []
+current_stage: implement
+stages_completed:
+  - name: model
+    completed: "2026-07-26T03:54:00+12:00"
+    artifact: ddd-01-domain-model.md
+  - name: design
+    completed: "2026-07-26T03:55:00+12:00"
+    artifact: ddd-02-technical-design.md
 
 requires_bolts:
   - 005-session-management-1

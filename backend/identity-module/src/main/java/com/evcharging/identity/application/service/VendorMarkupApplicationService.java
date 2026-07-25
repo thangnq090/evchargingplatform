@@ -46,4 +46,10 @@ public class VendorMarkupApplicationService implements VendorMarkupApi {
     // TODO: publish VendorMarkupChangedEvent for cross-module cache invalidation
     return newMarkup;
   }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Optional<String> getVendorName(UUID vendorId) {
+    return vendorRepository.findById(vendorId).map(Vendor::getName);
+  }
 }

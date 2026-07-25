@@ -42,6 +42,18 @@
         </dependency>
 
         <dependency>
+            <groupId>com.evcharging</groupId>
+            <artifactId>identity-module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.evcharging</groupId>
+            <artifactId>station-module</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>

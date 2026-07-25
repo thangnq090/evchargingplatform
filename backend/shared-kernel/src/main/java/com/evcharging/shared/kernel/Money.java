@@ -27,6 +27,11 @@ public final class Money implements Serializable {
   private final BigDecimal amount;
   private final Currency currency;
 
+  private Money() {
+    this.amount = null;
+    this.currency = null;
+  }
+
   private Money(BigDecimal amount, Currency currency) {
     this.amount = Objects.requireNonNull(amount, "Amount cannot be null");
     this.currency = Objects.requireNonNull(currency, "Currency cannot be null");

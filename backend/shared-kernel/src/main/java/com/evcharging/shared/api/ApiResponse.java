@@ -1,8 +1,9 @@
 package com.evcharging.shared.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Standard API response envelope used by all REST endpoints.

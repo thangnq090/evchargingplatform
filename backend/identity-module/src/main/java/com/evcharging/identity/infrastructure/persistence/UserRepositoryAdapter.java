@@ -1,12 +1,16 @@
 package com.evcharging.identity.infrastructure.persistence;
 
-import com.evcharging.identity.domain.model.User;
-import com.evcharging.identity.domain.repository.UserRepository;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.springframework.stereotype.Repository;
 
-/** Infrastructure adapter implementing the domain {@link UserRepository} port via Spring Data JPA. */
+import com.evcharging.identity.domain.model.User;
+import com.evcharging.identity.domain.repository.UserRepository;
+
+/**
+ * Infrastructure adapter implementing the domain {@link UserRepository} port via Spring Data JPA.
+ */
 @Repository
 class UserRepositoryAdapter implements UserRepository {
 
@@ -37,5 +41,10 @@ class UserRepositoryAdapter implements UserRepository {
   @Override
   public boolean existsByEmail(String email) {
     return jpa.existsByEmail(email);
+  }
+
+  @Override
+  public boolean existsByAccountNumber(String accountNumber) {
+    return jpa.existsByAccountNumber(accountNumber);
   }
 }

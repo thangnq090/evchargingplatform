@@ -1,9 +1,7 @@
 package com.evcharging.identity.infrastructure.security;
 
-import com.evcharging.shared.security.PlatformJwtAuthenticationConverter;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,12 +15,16 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
+import com.evcharging.shared.security.PlatformJwtAuthenticationConverter;
+
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
 /**
  * Security configuration for the identity module (WebFlux Reactive).
  *
- * <p>Stateless JWT resource server using HS256 (HMAC-SHA256). The same secret used to issue
- * tokens in {@link JwtIssuerService} is used here to verify them — no JWKS endpoint required
- * for the MVP.
+ * <p>Stateless JWT resource server using HS256 (HMAC-SHA256). The same secret used to issue tokens
+ * in {@link JwtIssuerService} is used here to verify them — no JWKS endpoint required for the MVP.
  */
 @Configuration
 @EnableWebFluxSecurity
@@ -39,8 +41,8 @@ class IdentitySecurityConfig {
   }
 
   /**
-   * HS256 in-process JWT decoder — uses the same HMAC secret as {@link JwtIssuerService}.
-   * No remote JWKS fetch needed.
+   * HS256 in-process JWT decoder — uses the same HMAC secret as {@link JwtIssuerService}. No remote
+   * JWKS fetch needed.
    */
   @Bean
   ReactiveJwtDecoder reactiveJwtDecoder() {
@@ -52,15 +54,14 @@ class IdentitySecurityConfig {
 
   @Bean
   SecurityWebFilterChain identitySecurityWebFilterChain(ServerHttpSecurity http) {
-    return http
-        .csrf(ServerHttpSecurity.CsrfSpec::disable)
+    return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
         .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
         .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
         .authorizeExchange(
             auth ->
-                auth
-                    .pathMatchers(
+                auth.pathMatchers(
                         "/api/v1/identity/auth/login",
+                        "/api/v1/identity/auth/register-customer",
                         "/api/v1/identity/auth/invitations/accept")
                     .permitAll()
                     .pathMatchers("/api/v1/identity/vendors/**")

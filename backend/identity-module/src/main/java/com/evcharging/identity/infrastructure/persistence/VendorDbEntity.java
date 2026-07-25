@@ -1,7 +1,8 @@
 package com.evcharging.identity.infrastructure.persistence;
 
-import com.evcharging.identity.domain.model.Vendor;
-import com.evcharging.identity.domain.model.VendorStatus;
+import java.time.Instant;
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -9,19 +10,19 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.time.Instant;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.domain.Persistable;
 
-/**
- * JPA mapping entity for the {@code identity.vendors} table. Not exposed beyond
- * infrastructure.
- */
+import com.evcharging.identity.domain.model.Vendor;
+import com.evcharging.identity.domain.model.VendorStatus;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+/** JPA mapping entity for the {@code identity.vendors} table. Not exposed beyond infrastructure. */
 @Entity
 @Table(name = "vendors", schema = "identity")
 @Getter
@@ -47,8 +48,7 @@ class VendorDbEntity implements Persistable<UUID> {
   @Column(name = "updated_at")
   private Instant updatedAt;
 
-  @Transient
-  private boolean isNew = true;
+  @Transient private boolean isNew = true;
 
   @Override
   public UUID getId() {

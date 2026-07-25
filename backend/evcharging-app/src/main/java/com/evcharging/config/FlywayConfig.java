@@ -1,7 +1,7 @@
 package com.evcharging.config;
 
 import java.util.List;
-import org.flywaydb.core.Flyway;
+
 import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

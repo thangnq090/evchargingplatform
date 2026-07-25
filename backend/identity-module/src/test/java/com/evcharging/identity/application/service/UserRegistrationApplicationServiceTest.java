@@ -4,19 +4,11 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
-import com.evcharging.identity.application.dto.CreateVendorRequest;
-import com.evcharging.identity.application.dto.CreateVendorResponse;
-import com.evcharging.identity.application.dto.RegisterAdminRequest;
-import com.evcharging.identity.application.dto.UserResponse;
-import com.evcharging.identity.application.dto.AcceptInvitationRequest;
-import com.evcharging.identity.domain.model.*;
-import com.evcharging.identity.domain.repository.InvitationRepository;
-import com.evcharging.identity.domain.repository.UserRepository;
-import com.evcharging.identity.domain.repository.VendorRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -26,6 +18,17 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.evcharging.identity.application.dto.AcceptInvitationRequest;
+import com.evcharging.identity.application.dto.CreateVendorRequest;
+import com.evcharging.identity.application.dto.CreateVendorResponse;
+import com.evcharging.identity.application.dto.RegisterAdminRequest;
+import com.evcharging.identity.application.dto.RegisterCustomerRequest;
+import com.evcharging.identity.application.dto.UserResponse;
+import com.evcharging.identity.domain.model.*;
+import com.evcharging.identity.domain.repository.InvitationRepository;
+import com.evcharging.identity.domain.repository.UserRepository;
+import com.evcharging.identity.domain.repository.VendorRepository;
 
 @DisplayName("UserRegistrationApplicationService Tests")
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +46,11 @@ class UserRegistrationApplicationServiceTest {
   void setUp() {
     service =
         new UserRegistrationApplicationService(
-            userRepository, vendorRepository, invitationRepository, passwordEncoder, eventPublisher);
+            userRepository,
+            vendorRepository,
+            invitationRepository,
+            passwordEncoder,
+            eventPublisher);
   }
 
   @Nested
@@ -59,8 +66,15 @@ class UserRegistrationApplicationServiceTest {
 
       User saved =
           User.reconstitute(
-              UUID.randomUUID(), "Alice", "alice@example.com", "$bcrypt", Role.ADMIN, null,
-              UserStatus.ACTIVE, Instant.now(), Instant.now());
+              UUID.randomUUID(),
+              "Alice",
+              "alice@example.com",
+              "$bcrypt",
+              Role.ADMIN,
+              null,
+              UserStatus.ACTIVE,
+              Instant.now(),
+              Instant.now());
       given(userRepository.save(any(User.class))).willReturn(saved);
 
       UserResponse result = service.registerAdmin(req);
@@ -83,27 +97,71 @@ class UserRegistrationApplicationServiceTest {
   }
 
   @Nested
+  @DisplayName("registerCustomer")
+  class RegisterCustomer {
+
+    @Test
+    @DisplayName("registers customer with auto-generated account number successfully")
+    void shouldRegisterCustomerSuccessfully() {
+      RegisterCustomerRequest req =
+          new RegisterCustomerRequest("Dave", "dave@example.com", "password123", "+123456789");
+      given(userRepository.existsByEmail("dave@example.com")).willReturn(false);
+      given(userRepository.existsByAccountNumber(anyString())).willReturn(false);
+      given(passwordEncoder.encode("password123")).willReturn("$bcrypt");
+
+      User saved =
+          User.reconstitute(
+              UUID.randomUUID(),
+              "Dave",
+              "dave@example.com",
+              "$bcrypt",
+              "+123456789",
+              Role.CUSTOMER,
+              null,
+              "ACC-A1B2C3D4",
+              UserStatus.ACTIVE,
+              Instant.now(),
+              Instant.now());
+      given(userRepository.save(any(User.class))).willReturn(saved);
+
+      UserResponse result = service.registerCustomer(req);
+
+      assertThat(result.email()).isEqualTo("dave@example.com");
+      assertThat(result.role()).isEqualTo(Role.CUSTOMER);
+      assertThat(result.accountNumber()).isEqualTo("ACC-A1B2C3D4");
+      assertThat(result.phone()).isEqualTo("+123456789");
+      then(eventPublisher).should().publishEvent(any(Object.class));
+    }
+  }
+
+  @Nested
   @DisplayName("createVendorWithAdmin")
   class CreateVendorWithAdmin {
 
     @Test
     @DisplayName("creates vendor and invitation successfully")
     void shouldCreateVendorAndInvitation() {
-      CreateVendorRequest req =
-          new CreateVendorRequest("ACME Corp", "Bob", "bob@acme.com");
+      CreateVendorRequest req = new CreateVendorRequest("ACME Corp", "Bob", "bob@acme.com");
 
       given(vendorRepository.existsByName("ACME Corp")).willReturn(false);
       given(userRepository.existsByEmail("bob@acme.com")).willReturn(false);
 
       UUID vendorId = UUID.randomUUID();
       Vendor savedVendor =
-          Vendor.reconstitute(vendorId, "ACME Corp", VendorStatus.ACTIVE, Instant.now(), Instant.now());
+          Vendor.reconstitute(
+              vendorId, "ACME Corp", VendorStatus.ACTIVE, Instant.now(), Instant.now());
       given(vendorRepository.save(any(Vendor.class))).willReturn(savedVendor);
 
       Invitation savedInvitation =
           Invitation.reconstitute(
-              UUID.randomUUID(), "bob@acme.com", vendorId, Role.VENDOR_ADMIN, "secure-token",
-              Instant.now().plus(48, ChronoUnit.HOURS), InvitationStatus.PENDING, Instant.now());
+              UUID.randomUUID(),
+              "bob@acme.com",
+              vendorId,
+              Role.VENDOR_ADMIN,
+              "secure-token",
+              Instant.now().plus(48, ChronoUnit.HOURS),
+              InvitationStatus.PENDING,
+              Instant.now());
       given(invitationRepository.save(any(Invitation.class))).willReturn(savedInvitation);
 
       CreateVendorResponse result = service.createVendorWithAdmin(req);
@@ -119,7 +177,9 @@ class UserRegistrationApplicationServiceTest {
     void shouldThrowWhenVendorNameExists() {
       given(vendorRepository.existsByName("Existing")).willReturn(true);
       assertThatThrownBy(
-              () -> service.createVendorWithAdmin(new CreateVendorRequest("Existing", "x", "x@x.com")))
+              () ->
+                  service.createVendorWithAdmin(
+                      new CreateVendorRequest("Existing", "x", "x@x.com")))
           .isInstanceOf(IllegalStateException.class)
           .hasMessageContaining("already exists");
     }
@@ -135,8 +195,14 @@ class UserRegistrationApplicationServiceTest {
       UUID vendorId = UUID.randomUUID();
       Invitation invitation =
           Invitation.reconstitute(
-              UUID.randomUUID(), "bob@acme.com", vendorId, Role.VENDOR_ADMIN, "valid-tok",
-              Instant.now().plus(24, ChronoUnit.HOURS), InvitationStatus.PENDING, Instant.now());
+              UUID.randomUUID(),
+              "bob@acme.com",
+              vendorId,
+              Role.VENDOR_ADMIN,
+              "valid-tok",
+              Instant.now().plus(24, ChronoUnit.HOURS),
+              InvitationStatus.PENDING,
+              Instant.now());
 
       given(invitationRepository.findByToken("valid-tok")).willReturn(Optional.of(invitation));
       given(userRepository.existsByEmail("bob@acme.com")).willReturn(false);
@@ -144,12 +210,20 @@ class UserRegistrationApplicationServiceTest {
 
       User saved =
           User.reconstitute(
-              UUID.randomUUID(), "Bob", "bob@acme.com", "$bcrypt", Role.VENDOR_ADMIN, vendorId,
-              UserStatus.ACTIVE, Instant.now(), Instant.now());
+              UUID.randomUUID(),
+              "Bob",
+              "bob@acme.com",
+              "$bcrypt",
+              Role.VENDOR_ADMIN,
+              vendorId,
+              UserStatus.ACTIVE,
+              Instant.now(),
+              Instant.now());
       given(userRepository.save(any())).willReturn(saved);
       given(invitationRepository.save(any())).willReturn(invitation);
 
-      UserResponse result = service.acceptInvitation(new AcceptInvitationRequest("valid-tok", "Bob", "secret123"));
+      UserResponse result =
+          service.acceptInvitation(new AcceptInvitationRequest("valid-tok", "Bob", "secret123"));
 
       assertThat(result.email()).isEqualTo("bob@acme.com");
       assertThat(result.role()).isEqualTo(Role.VENDOR_ADMIN);
@@ -161,7 +235,9 @@ class UserRegistrationApplicationServiceTest {
       given(invitationRepository.findByToken("bad-tok")).willReturn(Optional.empty());
 
       assertThatThrownBy(
-              () -> service.acceptInvitation(new AcceptInvitationRequest("bad-tok", "Bob", "secret123")))
+              () ->
+                  service.acceptInvitation(
+                      new AcceptInvitationRequest("bad-tok", "Bob", "secret123")))
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("Invalid invitation token");
     }

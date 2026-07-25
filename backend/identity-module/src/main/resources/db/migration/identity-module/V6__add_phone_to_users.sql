@@ -1,0 +1,1 @@
+ALTER TABLE identity.users ADD COLUMN IF NOT EXISTS phone VARCHAR(50);

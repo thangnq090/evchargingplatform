@@ -7,6 +7,5 @@ import jakarta.validation.constraints.NotBlank;
 public record CreateVendorRequest(
     @NotBlank(message = "Vendor name is required") String vendorName,
     @NotBlank(message = "Admin name is required") String adminName,
-    @NotBlank(message = "Admin email is required")
-        @Email(message = "Invalid email format")
+    @NotBlank(message = "Admin email is required") @Email(message = "Invalid email format")
         String adminEmail) {}

@@ -1,8 +1,8 @@
 package com.evcharging.identity.infrastructure.persistence;
 
-import com.evcharging.identity.domain.model.Invitation;
-import com.evcharging.identity.domain.model.InvitationStatus;
-import com.evcharging.identity.domain.model.Role;
+import java.time.Instant;
+import java.util.UUID;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -10,17 +10,20 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import java.time.Instant;
-import java.util.UUID;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.domain.Persistable;
 
+import com.evcharging.identity.domain.model.Invitation;
+import com.evcharging.identity.domain.model.InvitationStatus;
+import com.evcharging.identity.domain.model.Role;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 /**
- * JPA mapping entity for the {@code identity.invitations} table. Not exposed
- * beyond infrastructure.
+ * JPA mapping entity for the {@code identity.invitations} table. Not exposed beyond infrastructure.
  */
 @Entity
 @Table(name = "invitations", schema = "identity")
@@ -56,8 +59,7 @@ class InvitationDbEntity implements Persistable<UUID> {
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
 
-  @Transient
-  private boolean isNew = true;
+  @Transient private boolean isNew = true;
 
   @Override
   public UUID getId() {

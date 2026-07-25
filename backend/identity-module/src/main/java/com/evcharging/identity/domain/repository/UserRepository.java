@@ -1,8 +1,9 @@
 package com.evcharging.identity.domain.repository;
 
-import com.evcharging.identity.domain.model.User;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.evcharging.identity.domain.model.User;
 
 /** Domain port — persistence contract for User aggregates. */
 public interface UserRepository {
@@ -14,4 +15,6 @@ public interface UserRepository {
   Optional<User> findByEmail(String email);
 
   boolean existsByEmail(String email);
+
+  boolean existsByAccountNumber(String accountNumber);
 }

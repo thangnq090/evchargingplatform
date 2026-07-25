@@ -1,8 +1,9 @@
 package com.evcharging.identity.domain.repository;
 
-import com.evcharging.identity.domain.model.Invitation;
 import java.util.Optional;
 import java.util.UUID;
+
+import com.evcharging.identity.domain.model.Invitation;
 
 /** Domain port — persistence contract for Invitation aggregates. */
 public interface InvitationRepository {

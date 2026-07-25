@@ -1,12 +1,27 @@
 package com.evcharging.identity.application.service;
 
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Base64;
+import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.evcharging.identity.application.dto.AcceptInvitationRequest;
 import com.evcharging.identity.application.dto.AddVendorUserRequest;
 import com.evcharging.identity.application.dto.CreateVendorRequest;
 import com.evcharging.identity.application.dto.CreateVendorResponse;
 import com.evcharging.identity.application.dto.RegisterAdminRequest;
+import com.evcharging.identity.application.dto.RegisterCustomerRequest;
 import com.evcharging.identity.application.dto.UserResponse;
 import com.evcharging.identity.domain.event.AdminRegisteredEvent;
+import com.evcharging.identity.domain.event.CustomerRegisteredEvent;
 import com.evcharging.identity.domain.event.VendorCreatedEvent;
 import com.evcharging.identity.domain.event.VendorInvitationAcceptedEvent;
 import com.evcharging.identity.domain.event.VendorInvitationIssuedEvent;
@@ -18,17 +33,6 @@ import com.evcharging.identity.domain.model.Vendor;
 import com.evcharging.identity.domain.repository.InvitationRepository;
 import com.evcharging.identity.domain.repository.UserRepository;
 import com.evcharging.identity.domain.repository.VendorRepository;
-import java.security.SecureRandom;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Base64;
-import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Application service coordinating user registration and vendor onboarding use cases.
@@ -91,11 +95,53 @@ public class UserRegistrationApplicationService {
   }
 
   /**
+   * Register a new customer with auto-generated account number.
+   *
+   * @param request customer registration details
+   * @return the created customer user
+   * @throws IllegalStateException if the email is already registered
+   */
+  @Transactional
+  public UserResponse registerCustomer(RegisterCustomerRequest request) {
+    String email = request.email().toLowerCase();
+
+    if (userRepository.existsByEmail(email)) {
+      throw new IllegalStateException("Email already registered: " + email);
+    }
+
+    String accountNumber = generateAccountNumber();
+    while (userRepository.existsByAccountNumber(accountNumber)) {
+      accountNumber = generateAccountNumber();
+    }
+
+    String passwordHash = passwordEncoder.encode(request.password());
+    User customer =
+        User.createCustomer(request.name(), email, passwordHash, request.phone(), accountNumber);
+    User saved = userRepository.save(customer);
+
+    log.info(
+        "Customer registered: userId={}, email={}, accountNumber={}",
+        saved.getId(),
+        saved.getEmail(),
+        saved.getAccountNumber());
+    eventPublisher.publishEvent(
+        new CustomerRegisteredEvent(
+            saved.getId(),
+            saved.getEmail(),
+            saved.getName(),
+            saved.getAccountNumber(),
+            Instant.now()));
+
+    return UserResponse.from(saved);
+  }
+
+  /**
    * Create a new Vendor and issue a VENDOR_ADMIN invitation to the specified email.
    *
    * @param request vendor creation details
    * @return vendor and invitation details
-   * @throws IllegalStateException if vendor name already exists or admin email is already registered
+   * @throws IllegalStateException if vendor name already exists or admin email is already
+   *     registered
    */
   @Transactional
   public CreateVendorResponse createVendorWithAdmin(CreateVendorRequest request) {
@@ -118,7 +164,9 @@ public class UserRegistrationApplicationService {
     Invitation savedInvitation = invitationRepository.save(invitation);
 
     log.info(
-        "Vendor created: vendorId={}, invitationId={}", savedVendor.getId(), savedInvitation.getId());
+        "Vendor created: vendorId={}, invitationId={}",
+        savedVendor.getId(),
+        savedInvitation.getId());
 
     eventPublisher.publishEvent(
         new VendorCreatedEvent(savedVendor.getId(), savedVendor.getName(), Instant.now()));
@@ -198,8 +246,7 @@ public class UserRegistrationApplicationService {
   @Transactional
   public UserResponse addVendorUser(UUID vendorAdminId, AddVendorUserRequest request) {
     if (request.role() != Role.VENDOR_USER) {
-      throw new IllegalArgumentException(
-          "Only VENDOR_USER role can be assigned via this endpoint");
+      throw new IllegalArgumentException("Only VENDOR_USER role can be assigned via this endpoint");
     }
 
     User vendorAdmin =
@@ -219,14 +266,19 @@ public class UserRegistrationApplicationService {
             request.name(), email, tempPasswordHash, Role.VENDOR_USER, vendorAdmin.getVendorId());
     User saved = userRepository.save(newUser);
 
-    log.info(
-        "Vendor user created: userId={}, vendorId={}", saved.getId(), saved.getVendorId());
+    log.info("Vendor user created: userId={}, vendorId={}", saved.getId(), saved.getVendorId());
 
     eventPublisher.publishEvent(
         new VendorUserCreatedEvent(
             saved.getId(), saved.getVendorId(), saved.getEmail(), saved.getRole(), Instant.now()));
 
     return UserResponse.from(saved);
+  }
+
+  /** Generates an account number in format ACC-XXXXXXXX. */
+  private static String generateAccountNumber() {
+    String suffix = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+    return "ACC-" + suffix;
   }
 
   /** Generates a cryptographically secure random 32-byte URL-safe Base64 token. */

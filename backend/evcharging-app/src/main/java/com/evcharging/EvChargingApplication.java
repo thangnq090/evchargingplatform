@@ -2,6 +2,7 @@ package com.evcharging;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 /**
  * Main application class for the EV Charging Platform.
@@ -24,6 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * structure under {@code com.evcharging} (e.g. {@code identity}, {@code station}, {@code session}).
  */
 @SpringBootApplication
+@EnableAsync
 public class EvChargingApplication {
 
   public static void main(String[] args) {

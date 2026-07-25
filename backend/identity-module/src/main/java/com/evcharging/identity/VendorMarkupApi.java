@@ -18,6 +18,9 @@ public interface VendorMarkupApi {
   /** Returns the current markup percentage for a vendor. */
   Optional<MarkupPercentage> getMarkup(UUID vendorId);
 
+  /** Returns the name of a vendor. */
+  Optional<String> getVendorName(UUID vendorId);
+
   /**
    * Updates the markup percentage for a vendor.
    *

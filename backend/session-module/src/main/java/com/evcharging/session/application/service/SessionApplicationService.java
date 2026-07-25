@@ -17,8 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.evcharging.identity.VendorMarkupApi;
+import com.evcharging.session.SessionApi;
+import com.evcharging.session.application.events.SessionCompletedEvent;
 import com.evcharging.session.domain.event.MeterReadingRecordedEvent;
-import com.evcharging.session.domain.event.SessionCompletedEvent;
 import com.evcharging.session.domain.event.SessionFailedEvent;
 import com.evcharging.session.domain.event.SessionStartedEvent;
 import com.evcharging.session.domain.model.ChargingSession;
@@ -33,7 +34,7 @@ import com.evcharging.station.StationApi;
 
 @Service
 @Transactional
-public class SessionApplicationService {
+public class SessionApplicationService implements SessionApi {
 
   private final ChargingSessionRepository sessionRepository;
   private final StationApi stationApi;
@@ -158,7 +159,12 @@ public class SessionApplicationService {
       session.complete(now, finalEnergy);
       ChargingSession saved = sessionRepository.save(session);
       eventPublisher.publishEvent(
-          new SessionCompletedEvent(sessionId, now, finalEnergy, saved.getTotalAmount()));
+          new SessionCompletedEvent(
+              sessionId.getValue(),
+              now,
+              finalEnergy,
+              saved.getTotalAmount().getAmountExact(),
+              saved.getTotalAmount().getCurrency().getCurrencyCode()));
       return saved;
     }
   }
@@ -198,5 +204,27 @@ public class SessionApplicationService {
     Instant end = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusNanos(1);
 
     return sessionRepository.findByStationIdAndStartTimeBetween(stationId, start, end);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public java.util.Optional<SessionDetails> getSessionDetails(UUID sessionId) {
+    return sessionRepository
+        .findById(SessionId.of(sessionId))
+        .map(
+            session ->
+                new SessionDetails(
+                    session.getId().getValue(),
+                    session.getStationId().getValue(),
+                    session.getConnectorId(),
+                    session.getCustomerId().getValue(),
+                    session.getVehicleId(),
+                    session.getStatus().name(),
+                    session.getStartTime(),
+                    session.getEndTime(),
+                    session.getTotalEnergyKwh(),
+                    session.getUnitRate().getAmount(),
+                    session.getUnitRate().getCurrency().getCurrencyCode(),
+                    session.getTotalAmount().getAmount()));
   }
 }

@@ -2,6 +2,7 @@ package com.evcharging.billing.domain.model;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+
 import com.evcharging.shared.kernel.Money;
 
 /** Value object representing a line item on an invoice. */
@@ -43,10 +44,10 @@ public final class InvoiceLineItem {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     InvoiceLineItem that = (InvoiceLineItem) o;
-    return Objects.equals(description, that.description) &&
-           Objects.equals(unitPrice, that.unitPrice) &&
-           Objects.equals(quantity, that.quantity) &&
-           Objects.equals(totalAmount, that.totalAmount);
+    return Objects.equals(description, that.description)
+        && Objects.equals(unitPrice, that.unitPrice)
+        && Objects.equals(quantity, that.quantity)
+        && Objects.equals(totalAmount, that.totalAmount);
   }
 
   @Override
@@ -56,11 +57,16 @@ public final class InvoiceLineItem {
 
   @Override
   public String toString() {
-    return "InvoiceLineItem{" +
-           "description='" + description + '\'' +
-           ", unitPrice=" + unitPrice +
-           ", quantity=" + quantity +
-           ", totalAmount=" + totalAmount +
-           '}';
+    return "InvoiceLineItem{"
+        + "description='"
+        + description
+        + '\''
+        + ", unitPrice="
+        + unitPrice
+        + ", quantity="
+        + quantity
+        + ", totalAmount="
+        + totalAmount
+        + '}';
   }
 }

@@ -27,6 +27,8 @@ public class BillingAccountRepositoryAdapter implements BillingAccountRepository
 
   @Override
   public Optional<BillingAccount> findByCustomerId(UUID customerId) {
-    return jpaBillingAccountRepository.findByCustomerId(customerId).map(BillingAccountEntity::toDomain);
+    return jpaBillingAccountRepository
+        .findByCustomerId(customerId)
+        .map(BillingAccountEntity::toDomain);
   }
 }

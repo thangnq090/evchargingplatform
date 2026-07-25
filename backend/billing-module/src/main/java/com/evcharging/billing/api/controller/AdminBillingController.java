@@ -28,8 +28,8 @@ public class AdminBillingController {
   }
 
   /**
-   * Admin: Generate income report filtered by date range and optionally by vendor.
-   * GET /api/v1/admin/billing/income?startDate=...&endDate=...&vendorId=...
+   * Admin: Generate income report filtered by date range and optionally by vendor. GET
+   * /api/v1/admin/billing/income?startDate=...&endDate=...&vendorId=...
    */
   @GetMapping("/api/v1/admin/billing/income")
   @PreAuthorize("hasRole('ADMIN')")
@@ -38,24 +38,26 @@ public class AdminBillingController {
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
       @RequestParam(required = false) UUID vendorId) {
 
-    return Mono.fromCallable(() -> billingApplicationService.getAdminIncomeReport(startDate, endDate, vendorId))
+    return Mono.fromCallable(
+            () -> billingApplicationService.getAdminIncomeReport(startDate, endDate, vendorId))
         .map(report -> ResponseEntity.ok(ApiResponse.ok(report)));
   }
 
   /**
-   * Retrieve invoice for a completed session (admin or session owner).
-   * GET /api/v1/billing/invoices/session/{sessionId}
+   * Retrieve invoice for a completed session (admin or session owner). GET
+   * /api/v1/billing/invoices/session/{sessionId}
    */
   @GetMapping("/api/v1/billing/invoices/session/{sessionId}")
-  @PreAuthorize("hasRole('ADMIN') or hasRole('CUSTOMER') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
+  @PreAuthorize(
+      "hasRole('ADMIN') or hasRole('CUSTOMER') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<InvoiceResponse>>> getInvoiceBySession(
       @PathVariable UUID sessionId) {
 
     return Mono.fromCallable(() -> billingApplicationService.getInvoiceBySessionId(sessionId))
-        .map(opt -> opt
-            .<ResponseEntity<ApiResponse<InvoiceResponse>>>map(
-                invoice -> ResponseEntity.ok(ApiResponse.ok(invoice)))
-            .orElse(ResponseEntity.notFound().build()));
+        .map(
+            opt ->
+                opt.<ResponseEntity<ApiResponse<InvoiceResponse>>>map(
+                        invoice -> ResponseEntity.ok(ApiResponse.ok(invoice)))
+                    .orElse(ResponseEntity.notFound().build()));
   }
 }
-

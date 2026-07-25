@@ -3,6 +3,7 @@ package com.evcharging.billing.domain.model;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
+
 import com.evcharging.shared.kernel.Money;
 
 /** Aggregate root representing a customer's billing account. */
@@ -15,11 +16,7 @@ public class BillingAccount {
   private Instant lastBilledAt;
 
   public BillingAccount(
-      BillingAccountId id,
-      UUID customerId,
-      Money balance,
-      Money totalSpent,
-      Instant lastBilledAt) {
+      BillingAccountId id, UUID customerId, Money balance, Money totalSpent, Instant lastBilledAt) {
     this.id = Objects.requireNonNull(id, "Account ID cannot be null");
     this.customerId = Objects.requireNonNull(customerId, "Customer ID cannot be null");
     this.balance = Objects.requireNonNull(balance, "Balance cannot be null");
@@ -29,12 +26,7 @@ public class BillingAccount {
 
   public static BillingAccount createForCustomer(UUID customerId) {
     return new BillingAccount(
-        BillingAccountId.generate(),
-        customerId,
-        Money.zeroEur(),
-        Money.zeroEur(),
-        null
-    );
+        BillingAccountId.generate(), customerId, Money.zeroEur(), Money.zeroEur(), null);
   }
 
   public void billInvoice(Money amount, Instant billedAt) {

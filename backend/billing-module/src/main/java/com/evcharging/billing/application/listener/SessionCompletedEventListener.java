@@ -19,8 +19,8 @@ public class SessionCompletedEventListener {
   }
 
   /**
-   * Handles session completion events. Listens after commit to ensure session transactional boundary
-   * is complete before starting the billing workflow.
+   * Handles session completion events. Listens after commit to ensure session transactional
+   * boundary is complete before starting the billing workflow.
    */
   @Async
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -28,4 +28,3 @@ public class SessionCompletedEventListener {
     billingApplicationService.generateInvoice(event.sessionId());
   }
 }
-

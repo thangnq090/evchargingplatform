@@ -25,7 +25,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
 import com.evcharging.billing.application.dto.IncomeReportResponse;
-import com.evcharging.billing.application.dto.InvoiceResponse;
 import com.evcharging.billing.domain.event.InvoiceGeneratedEvent;
 import com.evcharging.billing.domain.model.BillingAccount;
 import com.evcharging.billing.domain.model.Invoice;
@@ -61,22 +60,32 @@ class BillingApplicationServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new BillingApplicationService(
-        invoiceRepository,
-        billingAccountRepository,
-        sessionApi,
-        stationApi,
-        vendorMarkupApi,
-        eventPublisher);
+    service =
+        new BillingApplicationService(
+            invoiceRepository,
+            billingAccountRepository,
+            sessionApi,
+            stationApi,
+            vendorMarkupApi,
+            eventPublisher);
 
-    sessionDetails = new SessionDetails(
-        sessionId, stationId, 1, customerId, null,
-        "COMPLETED", Instant.now().minusSeconds(300), Instant.now(),
-        new BigDecimal("10.0000"),
-        new BigDecimal("0.2500"), "EUR",
-        new BigDecimal("2.5000"));
+    sessionDetails =
+        new SessionDetails(
+            sessionId,
+            stationId,
+            1,
+            customerId,
+            null,
+            "COMPLETED",
+            Instant.now().minusSeconds(300),
+            Instant.now(),
+            new BigDecimal("10.0000"),
+            new BigDecimal("0.2500"),
+            "EUR",
+            new BigDecimal("2.5000"));
 
-    stationDetails = new StationDetails(stationId, "AVAILABLE", vendorId.toString(), 2500, List.of());
+    stationDetails =
+        new StationDetails(stationId, "AVAILABLE", vendorId.toString(), 2500, List.of());
   }
 
   @Nested
@@ -95,7 +104,8 @@ class BillingApplicationServiceTest {
       given(billingAccountRepository.findByCustomerId(customerId))
           .willReturn(Optional.empty()); // new customer
       given(invoiceRepository.save(any(Invoice.class))).willAnswer(inv -> inv.getArgument(0));
-      given(billingAccountRepository.save(any(BillingAccount.class))).willAnswer(inv -> inv.getArgument(0));
+      given(billingAccountRepository.save(any(BillingAccount.class)))
+          .willAnswer(inv -> inv.getArgument(0));
 
       // When
       Invoice result = service.generateInvoice(sessionId);
@@ -119,12 +129,17 @@ class BillingApplicationServiceTest {
     @DisplayName("should be idempotent — return existing invoice if already generated")
     void shouldBeIdempotentWhenInvoiceAlreadyExists() {
       // Given: existing invoice present
-      Invoice existing = Invoice.generate(
-          sessionId, customerId, vendorId,
-          List.of(new com.evcharging.billing.domain.model.InvoiceLineItem(
-              "Base Charging Fee", com.evcharging.shared.kernel.Money.of(new BigDecimal("0.2500"), "EUR"),
-              new BigDecimal("10.0000"))),
-          Instant.now());
+      Invoice existing =
+          Invoice.generate(
+              sessionId,
+              customerId,
+              vendorId,
+              List.of(
+                  new com.evcharging.billing.domain.model.InvoiceLineItem(
+                      "Base Charging Fee",
+                      com.evcharging.shared.kernel.Money.of(new BigDecimal("0.2500"), "EUR"),
+                      new BigDecimal("10.0000"))),
+              Instant.now());
       given(invoiceRepository.findBySessionId(sessionId)).willReturn(Optional.of(existing));
 
       // When
@@ -155,21 +170,36 @@ class BillingApplicationServiceTest {
     @DisplayName("should return total revenue and session count for date range")
     void shouldReturnReportForDateRange() {
       // Given: two invoices for same vendor
-      Invoice inv1 = Invoice.generate(UUID.randomUUID(), customerId, vendorId,
-          List.of(new com.evcharging.billing.domain.model.InvoiceLineItem(
-              "Base", com.evcharging.shared.kernel.Money.of(new BigDecimal("0.25"), "EUR"),
-              new BigDecimal("10.0000"))), Instant.now());
-      Invoice inv2 = Invoice.generate(UUID.randomUUID(), UUID.randomUUID(), vendorId,
-          List.of(new com.evcharging.billing.domain.model.InvoiceLineItem(
-              "Base", com.evcharging.shared.kernel.Money.of(new BigDecimal("0.25"), "EUR"),
-              new BigDecimal("5.0000"))), Instant.now());
+      Invoice inv1 =
+          Invoice.generate(
+              UUID.randomUUID(),
+              customerId,
+              vendorId,
+              List.of(
+                  new com.evcharging.billing.domain.model.InvoiceLineItem(
+                      "Base",
+                      com.evcharging.shared.kernel.Money.of(new BigDecimal("0.25"), "EUR"),
+                      new BigDecimal("10.0000"))),
+              Instant.now());
+      Invoice inv2 =
+          Invoice.generate(
+              UUID.randomUUID(),
+              UUID.randomUUID(),
+              vendorId,
+              List.of(
+                  new com.evcharging.billing.domain.model.InvoiceLineItem(
+                      "Base",
+                      com.evcharging.shared.kernel.Money.of(new BigDecimal("0.25"), "EUR"),
+                      new BigDecimal("5.0000"))),
+              Instant.now());
 
-      given(invoiceRepository.findAllByCreatedAtBetween(any(), any())).willReturn(List.of(inv1, inv2));
+      given(invoiceRepository.findAllByCreatedAtBetween(any(), any()))
+          .willReturn(List.of(inv1, inv2));
       given(vendorMarkupApi.getVendorName(vendorId)).willReturn(Optional.of("ACME Corp"));
 
       // When
-      IncomeReportResponse report = service.getAdminIncomeReport(
-          LocalDate.now().minusDays(7), LocalDate.now(), null);
+      IncomeReportResponse report =
+          service.getAdminIncomeReport(LocalDate.now().minusDays(7), LocalDate.now(), null);
 
       // Then
       assertThat(report.sessionCount()).isEqualTo(2);
@@ -182,18 +212,25 @@ class BillingApplicationServiceTest {
     @DisplayName("should filter by vendorId when specified")
     void shouldFilterByVendor() {
       // Given: invoice only for this vendor
-      Invoice inv = Invoice.generate(UUID.randomUUID(), customerId, vendorId,
-          List.of(new com.evcharging.billing.domain.model.InvoiceLineItem(
-              "Base", com.evcharging.shared.kernel.Money.of(new BigDecimal("0.25"), "EUR"),
-              new BigDecimal("8.0000"))), Instant.now());
+      Invoice inv =
+          Invoice.generate(
+              UUID.randomUUID(),
+              customerId,
+              vendorId,
+              List.of(
+                  new com.evcharging.billing.domain.model.InvoiceLineItem(
+                      "Base",
+                      com.evcharging.shared.kernel.Money.of(new BigDecimal("0.25"), "EUR"),
+                      new BigDecimal("8.0000"))),
+              Instant.now());
 
       given(invoiceRepository.findByVendorIdAndCreatedAtBetween(any(), any(), any()))
           .willReturn(List.of(inv));
       given(vendorMarkupApi.getVendorName(vendorId)).willReturn(Optional.empty());
 
       // When
-      IncomeReportResponse report = service.getAdminIncomeReport(
-          LocalDate.now().minusDays(30), LocalDate.now(), vendorId);
+      IncomeReportResponse report =
+          service.getAdminIncomeReport(LocalDate.now().minusDays(30), LocalDate.now(), vendorId);
 
       // Then
       assertThat(report.sessionCount()).isEqualTo(1);

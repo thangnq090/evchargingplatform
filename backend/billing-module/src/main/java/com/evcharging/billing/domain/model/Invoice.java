@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
 import com.evcharging.shared.kernel.Money;
 
 /** Aggregate root representing a customer invoice for a completed session. */
@@ -36,7 +37,8 @@ public class Invoice {
     this.status = Objects.requireNonNull(status, "Status cannot be null");
     this.totalAmount = Objects.requireNonNull(totalAmount, "Total amount cannot be null");
     this.createdAt = Objects.requireNonNull(createdAt, "Created timestamp cannot be null");
-    this.lineItems = new ArrayList<>(Objects.requireNonNull(lineItems, "Line items list cannot be null"));
+    this.lineItems =
+        new ArrayList<>(Objects.requireNonNull(lineItems, "Line items list cannot be null"));
     if (lineItems.isEmpty()) {
       throw new IllegalArgumentException("Invoice must have at least one line item");
     }
@@ -49,11 +51,11 @@ public class Invoice {
       List<InvoiceLineItem> lineItems,
       Instant createdAt) {
     InvoiceId id = InvoiceId.generate();
-    Money total = lineItems.stream()
-        .map(InvoiceLineItem::getTotalAmount)
-        .reduce(Money.zeroEur(), Money::add);
+    Money total =
+        lineItems.stream().map(InvoiceLineItem::getTotalAmount).reduce(Money.zeroEur(), Money::add);
 
-    return new Invoice(id, sessionId, customerId, vendorId, InvoiceStatus.PENDING, total, createdAt, lineItems);
+    return new Invoice(
+        id, sessionId, customerId, vendorId, InvoiceStatus.PENDING, total, createdAt, lineItems);
   }
 
   public void markPaid() {

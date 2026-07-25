@@ -20,19 +20,20 @@ public class BillingSecurityConfig {
   @Bean
   @Order(98)
   public SecurityWebFilterChain billingSecurityWebFilterChain(ServerHttpSecurity http) {
-    return http
-        .securityMatcher(ServerWebExchangeMatchers.pathMatchers(
-            "/api/v1/admin/billing/**",
-            "/api/v1/billing/**"))
+    return http.securityMatcher(
+            ServerWebExchangeMatchers.pathMatchers(
+                "/api/v1/admin/billing/**", "/api/v1/billing/**"))
         .csrf(ServerHttpSecurity.CsrfSpec::disable)
         .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
         .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
         .authorizeExchange(auth -> auth.anyExchange().authenticated())
-        .oauth2ResourceServer(oauth2 ->
-            oauth2.jwt(jwt ->
-                jwt.jwtAuthenticationConverter(
-                    new ReactiveJwtAuthenticationConverterAdapter(
-                        new PlatformJwtAuthenticationConverter()))))
+        .oauth2ResourceServer(
+            oauth2 ->
+                oauth2.jwt(
+                    jwt ->
+                        jwt.jwtAuthenticationConverter(
+                            new ReactiveJwtAuthenticationConverterAdapter(
+                                new PlatformJwtAuthenticationConverter()))))
         .build();
   }
 }

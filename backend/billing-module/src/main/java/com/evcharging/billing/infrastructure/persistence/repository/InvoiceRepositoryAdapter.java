@@ -40,7 +40,8 @@ public class InvoiceRepositoryAdapter implements InvoiceRepository {
   }
 
   @Override
-  public List<Invoice> findByVendorIdAndCreatedAtBetween(UUID vendorId, Instant start, Instant end) {
+  public List<Invoice> findByVendorIdAndCreatedAtBetween(
+      UUID vendorId, Instant start, Instant end) {
     return jpaInvoiceRepository.findByVendorIdAndCreatedAtBetween(vendorId, start, end).stream()
         .map(InvoiceEntity::toDomain)
         .collect(Collectors.toList());

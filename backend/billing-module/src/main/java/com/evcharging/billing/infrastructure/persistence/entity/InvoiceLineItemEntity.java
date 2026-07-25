@@ -17,8 +17,7 @@ import com.evcharging.shared.kernel.Money;
 @Table(name = "invoice_line_items", schema = "billing")
 public class InvoiceLineItemEntity {
 
-  @Id
-  private UUID id;
+  @Id private UUID id;
 
   @ManyToOne
   @JoinColumn(name = "invoice_id", nullable = false)
@@ -44,7 +43,8 @@ public class InvoiceLineItemEntity {
 
   public InvoiceLineItemEntity() {}
 
-  public static InvoiceLineItemEntity fromDomain(InvoiceLineItem item, InvoiceEntity invoiceEntity) {
+  public static InvoiceLineItemEntity fromDomain(
+      InvoiceLineItem item, InvoiceEntity invoiceEntity) {
     InvoiceLineItemEntity entity = new InvoiceLineItemEntity();
     entity.id = UUID.randomUUID();
     entity.invoice = invoiceEntity;
@@ -58,35 +58,71 @@ public class InvoiceLineItemEntity {
   }
 
   public InvoiceLineItem toDomain() {
-    return new InvoiceLineItem(
-        description,
-        Money.of(unitPriceAmount, unitPriceCurrency),
-        quantity
-    );
+    return new InvoiceLineItem(description, Money.of(unitPriceAmount, unitPriceCurrency), quantity);
   }
 
   // Getters and Setters
-  public UUID getId() { return id; }
-  public void setId(UUID id) { this.id = id; }
+  public UUID getId() {
+    return id;
+  }
 
-  public InvoiceEntity getInvoice() { return invoice; }
-  public void setInvoice(InvoiceEntity invoice) { this.invoice = invoice; }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-  public String getDescription() { return description; }
-  public void setDescription(String description) { this.description = description; }
+  public InvoiceEntity getInvoice() {
+    return invoice;
+  }
 
-  public BigDecimal getUnitPriceAmount() { return unitPriceAmount; }
-  public void setUnitPriceAmount(BigDecimal unitPriceAmount) { this.unitPriceAmount = unitPriceAmount; }
+  public void setInvoice(InvoiceEntity invoice) {
+    this.invoice = invoice;
+  }
 
-  public String getUnitPriceCurrency() { return unitPriceCurrency; }
-  public void setUnitPriceCurrency(String unitPriceCurrency) { this.unitPriceCurrency = unitPriceCurrency; }
+  public String getDescription() {
+    return description;
+  }
 
-  public BigDecimal getQuantity() { return quantity; }
-  public void setQuantity(BigDecimal quantity) { this.quantity = quantity; }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-  public BigDecimal getTotalAmount() { return totalAmount; }
-  public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+  public BigDecimal getUnitPriceAmount() {
+    return unitPriceAmount;
+  }
 
-  public String getCurrency() { return currency; }
-  public void setCurrency(String currency) { this.currency = currency; }
+  public void setUnitPriceAmount(BigDecimal unitPriceAmount) {
+    this.unitPriceAmount = unitPriceAmount;
+  }
+
+  public String getUnitPriceCurrency() {
+    return unitPriceCurrency;
+  }
+
+  public void setUnitPriceCurrency(String unitPriceCurrency) {
+    this.unitPriceCurrency = unitPriceCurrency;
+  }
+
+  public BigDecimal getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(BigDecimal quantity) {
+    this.quantity = quantity;
+  }
+
+  public BigDecimal getTotalAmount() {
+    return totalAmount;
+  }
+
+  public void setTotalAmount(BigDecimal totalAmount) {
+    this.totalAmount = totalAmount;
+  }
+
+  public String getCurrency() {
+    return currency;
+  }
+
+  public void setCurrency(String currency) {
+    this.currency = currency;
+  }
 }

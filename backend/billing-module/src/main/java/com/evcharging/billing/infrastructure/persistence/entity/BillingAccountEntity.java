@@ -18,8 +18,7 @@ import com.evcharging.shared.kernel.Money;
 @Table(name = "billing_accounts", schema = "billing")
 public class BillingAccountEntity {
 
-  @Id
-  private UUID id;
+  @Id private UUID id;
 
   @Column(name = "customer_id", nullable = false, unique = true)
   private UUID customerId;
@@ -39,8 +38,7 @@ public class BillingAccountEntity {
   @Column(name = "last_billed_at")
   private Instant lastBilledAt;
 
-  @Version
-  private int version;
+  @Version private int version;
 
   public BillingAccountEntity() {}
 
@@ -62,31 +60,67 @@ public class BillingAccountEntity {
         customerId,
         Money.of(balanceAmount, balanceCurrency),
         Money.of(totalSpentAmount, totalSpentCurrency),
-        lastBilledAt
-    );
+        lastBilledAt);
   }
 
   // Getters and Setters
-  public UUID getId() { return id; }
-  public void setId(UUID id) { this.id = id; }
+  public UUID getId() {
+    return id;
+  }
 
-  public UUID getCustomerId() { return customerId; }
-  public void setCustomerId(UUID customerId) { this.customerId = customerId; }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-  public BigDecimal getBalanceAmount() { return balanceAmount; }
-  public void setBalanceAmount(BigDecimal balanceAmount) { this.balanceAmount = balanceAmount; }
+  public UUID getCustomerId() {
+    return customerId;
+  }
 
-  public String getBalanceCurrency() { return balanceCurrency; }
-  public void setBalanceCurrency(String balanceCurrency) { this.balanceCurrency = balanceCurrency; }
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
+  }
 
-  public BigDecimal getTotalSpentAmount() { return totalSpentAmount; }
-  public void setTotalSpentAmount(BigDecimal totalSpentAmount) { this.totalSpentAmount = totalSpentAmount; }
+  public BigDecimal getBalanceAmount() {
+    return balanceAmount;
+  }
 
-  public String getTotalSpentCurrency() { return totalSpentCurrency; }
-  public void setTotalSpentCurrency(String totalSpentCurrency) { this.totalSpentCurrency = totalSpentCurrency; }
+  public void setBalanceAmount(BigDecimal balanceAmount) {
+    this.balanceAmount = balanceAmount;
+  }
 
-  public Instant getLastBilledAt() { return lastBilledAt; }
-  public void setLastBilledAt(Instant lastBilledAt) { this.lastBilledAt = lastBilledAt; }
+  public String getBalanceCurrency() {
+    return balanceCurrency;
+  }
 
-  public int getVersion() { return version; }
+  public void setBalanceCurrency(String balanceCurrency) {
+    this.balanceCurrency = balanceCurrency;
+  }
+
+  public BigDecimal getTotalSpentAmount() {
+    return totalSpentAmount;
+  }
+
+  public void setTotalSpentAmount(BigDecimal totalSpentAmount) {
+    this.totalSpentAmount = totalSpentAmount;
+  }
+
+  public String getTotalSpentCurrency() {
+    return totalSpentCurrency;
+  }
+
+  public void setTotalSpentCurrency(String totalSpentCurrency) {
+    this.totalSpentCurrency = totalSpentCurrency;
+  }
+
+  public Instant getLastBilledAt() {
+    return lastBilledAt;
+  }
+
+  public void setLastBilledAt(Instant lastBilledAt) {
+    this.lastBilledAt = lastBilledAt;
+  }
+
+  public int getVersion() {
+    return version;
+  }
 }

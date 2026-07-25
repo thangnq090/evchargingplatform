@@ -6,8 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Public API exposed by the session module for other modules to consume.
- * Located in the root package to satisfy Spring Modulith exposure rules.
+ * Public API exposed by the session module for other modules to consume. Located in the root
+ * package to satisfy Spring Modulith exposure rules.
  */
 public interface SessionApi {
 
@@ -25,6 +25,5 @@ public interface SessionApi {
       BigDecimal totalEnergyKwh,
       BigDecimal unitRateAmount,
       String unitRateCurrency,
-      BigDecimal totalAmount
-  ) {}
+      BigDecimal totalAmount) {}
 }

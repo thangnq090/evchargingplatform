@@ -5,14 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 public record IncomeReportResponse(
-    BigDecimal totalRevenue,
-    int sessionCount,
-    List<VendorBreakdownDto> breakdowns
-) {
+    BigDecimal totalRevenue, int sessionCount, List<VendorBreakdownDto> breakdowns) {
   public record VendorBreakdownDto(
-      UUID vendorId,
-      String vendorName,
-      BigDecimal revenue,
-      int sessionCount
-  ) {}
+      UUID vendorId, String vendorName, BigDecimal revenue, int sessionCount) {}
 }

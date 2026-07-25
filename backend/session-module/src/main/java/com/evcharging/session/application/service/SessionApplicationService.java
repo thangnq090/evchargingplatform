@@ -17,8 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.evcharging.identity.VendorMarkupApi;
-import com.evcharging.session.domain.event.MeterReadingRecordedEvent;
+import com.evcharging.session.SessionApi;
 import com.evcharging.session.application.events.SessionCompletedEvent;
+import com.evcharging.session.domain.event.MeterReadingRecordedEvent;
 import com.evcharging.session.domain.event.SessionFailedEvent;
 import com.evcharging.session.domain.event.SessionStartedEvent;
 import com.evcharging.session.domain.model.ChargingSession;
@@ -30,8 +31,6 @@ import com.evcharging.shared.kernel.Money;
 import com.evcharging.shared.kernel.StationId;
 import com.evcharging.shared.kernel.UserId;
 import com.evcharging.station.StationApi;
-
-import com.evcharging.session.SessionApi;
 
 @Service
 @Transactional
@@ -210,20 +209,22 @@ public class SessionApplicationService implements SessionApi {
   @Override
   @Transactional(readOnly = true)
   public java.util.Optional<SessionDetails> getSessionDetails(UUID sessionId) {
-    return sessionRepository.findById(SessionId.of(sessionId))
-        .map(session -> new SessionDetails(
-            session.getId().getValue(),
-            session.getStationId().getValue(),
-            session.getConnectorId(),
-            session.getCustomerId().getValue(),
-            session.getVehicleId(),
-            session.getStatus().name(),
-            session.getStartTime(),
-            session.getEndTime(),
-            session.getTotalEnergyKwh(),
-            session.getUnitRate().getAmount(),
-            session.getUnitRate().getCurrency().getCurrencyCode(),
-            session.getTotalAmount().getAmount()
-        ));
+    return sessionRepository
+        .findById(SessionId.of(sessionId))
+        .map(
+            session ->
+                new SessionDetails(
+                    session.getId().getValue(),
+                    session.getStationId().getValue(),
+                    session.getConnectorId(),
+                    session.getCustomerId().getValue(),
+                    session.getVehicleId(),
+                    session.getStatus().name(),
+                    session.getStartTime(),
+                    session.getEndTime(),
+                    session.getTotalEnergyKwh(),
+                    session.getUnitRate().getAmount(),
+                    session.getUnitRate().getCurrency().getCurrencyCode(),
+                    session.getTotalAmount().getAmount()));
   }
 }

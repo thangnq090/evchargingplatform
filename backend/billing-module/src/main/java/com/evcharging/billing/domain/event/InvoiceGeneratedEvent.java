@@ -2,6 +2,7 @@ package com.evcharging.billing.domain.event;
 
 import java.time.Instant;
 import java.util.UUID;
+
 import com.evcharging.billing.domain.model.InvoiceId;
 import com.evcharging.shared.kernel.Money;
 
@@ -12,5 +13,4 @@ public record InvoiceGeneratedEvent(
     UUID customerId,
     UUID vendorId,
     Money totalAmount,
-    Instant createdAt
-) {}
+    Instant createdAt) {}

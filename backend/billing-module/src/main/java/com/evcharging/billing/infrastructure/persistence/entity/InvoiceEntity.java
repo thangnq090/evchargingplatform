@@ -25,8 +25,7 @@ import com.evcharging.shared.kernel.Money;
 @Table(name = "invoices", schema = "billing")
 public class InvoiceEntity {
 
-  @Id
-  private UUID id;
+  @Id private UUID id;
 
   @Column(name = "session_id", nullable = false, unique = true)
   private UUID sessionId;
@@ -49,11 +48,14 @@ public class InvoiceEntity {
   @Column(name = "created_at", nullable = false)
   private Instant createdAt;
 
-  @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+  @OneToMany(
+      mappedBy = "invoice",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.EAGER)
   private List<InvoiceLineItemEntity> lineItems = new ArrayList<>();
 
-  @Version
-  private int version;
+  @Version private int version;
 
   public InvoiceEntity() {}
 
@@ -67,9 +69,10 @@ public class InvoiceEntity {
     entity.currency = invoice.getTotalAmount().getCurrency().getCurrencyCode();
     entity.status = invoice.getStatus().name();
     entity.createdAt = invoice.getCreatedAt();
-    entity.lineItems = invoice.getLineItems().stream()
-        .map(item -> InvoiceLineItemEntity.fromDomain(item, entity))
-        .collect(Collectors.toList());
+    entity.lineItems =
+        invoice.getLineItems().stream()
+            .map(item -> InvoiceLineItemEntity.fromDomain(item, entity))
+            .collect(Collectors.toList());
     return entity;
   }
 
@@ -82,37 +85,83 @@ public class InvoiceEntity {
         InvoiceStatus.valueOf(status),
         Money.of(totalAmount, currency),
         createdAt,
-        lineItems.stream().map(InvoiceLineItemEntity::toDomain).collect(Collectors.toList())
-    );
+        lineItems.stream().map(InvoiceLineItemEntity::toDomain).collect(Collectors.toList()));
   }
 
   // Getters and Setters
-  public UUID getId() { return id; }
-  public void setId(UUID id) { this.id = id; }
+  public UUID getId() {
+    return id;
+  }
 
-  public UUID getSessionId() { return sessionId; }
-  public void setSessionId(UUID sessionId) { this.sessionId = sessionId; }
+  public void setId(UUID id) {
+    this.id = id;
+  }
 
-  public UUID getCustomerId() { return customerId; }
-  public void setCustomerId(UUID customerId) { this.customerId = customerId; }
+  public UUID getSessionId() {
+    return sessionId;
+  }
 
-  public UUID getVendorId() { return vendorId; }
-  public void setVendorId(UUID vendorId) { this.vendorId = vendorId; }
+  public void setSessionId(UUID sessionId) {
+    this.sessionId = sessionId;
+  }
 
-  public BigDecimal getTotalAmount() { return totalAmount; }
-  public void setTotalAmount(BigDecimal totalAmount) { this.totalAmount = totalAmount; }
+  public UUID getCustomerId() {
+    return customerId;
+  }
 
-  public String getCurrency() { return currency; }
-  public void setCurrency(String currency) { this.currency = currency; }
+  public void setCustomerId(UUID customerId) {
+    this.customerId = customerId;
+  }
 
-  public String getStatus() { return status; }
-  public void setStatus(String status) { this.status = status; }
+  public UUID getVendorId() {
+    return vendorId;
+  }
 
-  public Instant getCreatedAt() { return createdAt; }
-  public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+  public void setVendorId(UUID vendorId) {
+    this.vendorId = vendorId;
+  }
 
-  public List<InvoiceLineItemEntity> getLineItems() { return lineItems; }
-  public void setLineItems(List<InvoiceLineItemEntity> lineItems) { this.lineItems = lineItems; }
+  public BigDecimal getTotalAmount() {
+    return totalAmount;
+  }
 
-  public int getVersion() { return version; }
+  public void setTotalAmount(BigDecimal totalAmount) {
+    this.totalAmount = totalAmount;
+  }
+
+  public String getCurrency() {
+    return currency;
+  }
+
+  public void setCurrency(String currency) {
+    this.currency = currency;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public List<InvoiceLineItemEntity> getLineItems() {
+    return lineItems;
+  }
+
+  public void setLineItems(List<InvoiceLineItemEntity> lineItems) {
+    this.lineItems = lineItems;
+  }
+
+  public int getVersion() {
+    return version;
+  }
 }

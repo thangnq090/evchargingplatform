@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,8 +70,10 @@ public class BillingApplicationService {
     }
 
     // 2. Fetch Session Details
-    SessionDetails session = sessionApi.getSessionDetails(sessionId)
-        .orElseThrow(() -> new IllegalArgumentException("Session not found: " + sessionId));
+    SessionDetails session =
+        sessionApi
+            .getSessionDetails(sessionId)
+            .orElseThrow(() -> new IllegalArgumentException("Session not found: " + sessionId));
 
     // 3. Fetch Station Details
     StationDetails station = stationApi.getStationDetails(StationId.of(session.stationId()));
@@ -83,38 +84,32 @@ public class BillingApplicationService {
 
     // 5. Calculate Line Items
     Money unitRate = Money.of(session.unitRateAmount(), session.unitRateCurrency());
-    List<InvoiceLineItem> lineItems = costCalculator.calculateLineItems(
-        session.totalEnergyKwh(),
-        unitRate,
-        markup
-    );
+    List<InvoiceLineItem> lineItems =
+        costCalculator.calculateLineItems(session.totalEnergyKwh(), unitRate, markup);
 
     // 6. Create & Save Invoice
     Instant createdAt = Instant.now();
-    Invoice invoice = Invoice.generate(
-        sessionId,
-        session.customerId(),
-        vendorId,
-        lineItems,
-        createdAt
-    );
+    Invoice invoice =
+        Invoice.generate(sessionId, session.customerId(), vendorId, lineItems, createdAt);
     Invoice savedInvoice = invoiceRepository.save(invoice);
 
     // 7. Update/Create Billing Account
-    BillingAccount billingAccount = billingAccountRepository.findByCustomerId(session.customerId())
-        .orElseGet(() -> BillingAccount.createForCustomer(session.customerId()));
+    BillingAccount billingAccount =
+        billingAccountRepository
+            .findByCustomerId(session.customerId())
+            .orElseGet(() -> BillingAccount.createForCustomer(session.customerId()));
     billingAccount.billInvoice(savedInvoice.getTotalAmount(), createdAt);
     billingAccountRepository.save(billingAccount);
 
     // 8. Publish Domain Event
-    eventPublisher.publishEvent(new InvoiceGeneratedEvent(
-        savedInvoice.getId(),
-        savedInvoice.getSessionId(),
-        savedInvoice.getCustomerId(),
-        savedInvoice.getVendorId(),
-        savedInvoice.getTotalAmount(),
-        savedInvoice.getCreatedAt()
-    ));
+    eventPublisher.publishEvent(
+        new InvoiceGeneratedEvent(
+            savedInvoice.getId(),
+            savedInvoice.getSessionId(),
+            savedInvoice.getCustomerId(),
+            savedInvoice.getVendorId(),
+            savedInvoice.getTotalAmount(),
+            savedInvoice.getCreatedAt()));
 
     return savedInvoice;
   }
@@ -127,7 +122,8 @@ public class BillingApplicationService {
 
   /** Generates income report for administrators. */
   @Transactional(readOnly = true)
-  public IncomeReportResponse getAdminIncomeReport(LocalDate startDate, LocalDate endDate, UUID vendorId) {
+  public IncomeReportResponse getAdminIncomeReport(
+      LocalDate startDate, LocalDate endDate, UUID vendorId) {
     Instant start = startDate.atStartOfDay(ZoneOffset.UTC).toInstant();
     // Use start of the *next* day as the exclusive upper bound so the full endDate
     // is covered regardless of sub-second precision or timezone drift.
@@ -140,15 +136,16 @@ public class BillingApplicationService {
       invoices = invoiceRepository.findAllByCreatedAtBetween(start, end);
     }
 
-    BigDecimal totalRevenue = invoices.stream()
-        .map(inv -> inv.getTotalAmount().getAmountExact())
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal totalRevenue =
+        invoices.stream()
+            .map(inv -> inv.getTotalAmount().getAmountExact())
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     int sessionCount = invoices.size();
 
     // Group breakdowns by vendor
-    Map<UUID, List<Invoice>> grouped = invoices.stream()
-        .collect(Collectors.groupingBy(Invoice::getVendorId));
+    Map<UUID, List<Invoice>> grouped =
+        invoices.stream().collect(Collectors.groupingBy(Invoice::getVendorId));
 
     List<IncomeReportResponse.VendorBreakdownDto> breakdowns = new ArrayList<>();
     for (Map.Entry<UUID, List<Invoice>> entry : grouped.entrySet()) {
@@ -156,31 +153,30 @@ public class BillingApplicationService {
       List<Invoice> vInvoices = entry.getValue();
 
       String vendorName = vendorMarkupApi.getVendorName(vId).orElse("Vendor " + vId);
-      BigDecimal revenue = vInvoices.stream()
-          .map(inv -> inv.getTotalAmount().getAmountExact())
-          .reduce(BigDecimal.ZERO, BigDecimal::add);
+      BigDecimal revenue =
+          vInvoices.stream()
+              .map(inv -> inv.getTotalAmount().getAmountExact())
+              .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-      breakdowns.add(new IncomeReportResponse.VendorBreakdownDto(
-          vId,
-          vendorName,
-          revenue,
-          vInvoices.size()
-      ));
+      breakdowns.add(
+          new IncomeReportResponse.VendorBreakdownDto(vId, vendorName, revenue, vInvoices.size()));
     }
 
     return new IncomeReportResponse(totalRevenue, sessionCount, breakdowns);
   }
 
   private InvoiceResponse mapToResponse(Invoice invoice) {
-    List<LineItemDto> lineItems = invoice.getLineItems().stream()
-        .map(item -> new LineItemDto(
-            item.getDescription(),
-            item.getUnitPrice().getAmountExact(),
-            item.getUnitPrice().getCurrency().getCurrencyCode(),
-            item.getQuantity(),
-            item.getTotalAmount().getAmountExact()
-        ))
-        .collect(Collectors.toList());
+    List<LineItemDto> lineItems =
+        invoice.getLineItems().stream()
+            .map(
+                item ->
+                    new LineItemDto(
+                        item.getDescription(),
+                        item.getUnitPrice().getAmountExact(),
+                        item.getUnitPrice().getCurrency().getCurrencyCode(),
+                        item.getQuantity(),
+                        item.getTotalAmount().getAmountExact()))
+            .collect(Collectors.toList());
 
     return new InvoiceResponse(
         invoice.getId().getValue(),
@@ -191,7 +187,6 @@ public class BillingApplicationService {
         invoice.getTotalAmount().getAmountExact(),
         invoice.getTotalAmount().getCurrency().getCurrencyCode(),
         invoice.getCreatedAt(),
-        lineItems
-    );
+        lineItems);
   }
 }

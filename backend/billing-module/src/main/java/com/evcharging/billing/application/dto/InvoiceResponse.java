@@ -14,13 +14,11 @@ public record InvoiceResponse(
     BigDecimal totalAmount,
     String currency,
     Instant createdAt,
-    List<LineItemDto> lineItems
-) {
+    List<LineItemDto> lineItems) {
   public record LineItemDto(
       String description,
       BigDecimal unitPrice,
       String currency,
       BigDecimal quantity,
-      BigDecimal totalAmount
-  ) {}
+      BigDecimal totalAmount) {}
 }

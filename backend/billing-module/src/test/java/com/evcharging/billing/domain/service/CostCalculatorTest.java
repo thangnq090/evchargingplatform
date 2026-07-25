@@ -1,7 +1,6 @@
 package com.evcharging.billing.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.within;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,8 +36,8 @@ class CostCalculatorTest {
       MarkupPercentage markup = MarkupPercentage.ofBasisPoints(2000); // 20%
 
       // When
-      List<InvoiceLineItem> items = costCalculator.calculateLineItems(
-          new BigDecimal("10.0000"), unitRate, markup);
+      List<InvoiceLineItem> items =
+          costCalculator.calculateLineItems(new BigDecimal("10.0000"), unitRate, markup);
 
       // Then
       assertThat(items).hasSize(2);
@@ -54,8 +53,7 @@ class CostCalculatorTest {
       // Total of both items should equal energy × total rate
       Money expectedTotal = unitRate.multiply(new BigDecimal("10.0000"));
       Money actualTotal = baseItem.getTotalAmount().add(markupItem.getTotalAmount());
-      assertThat(actualTotal.getAmountExact())
-          .isEqualByComparingTo(expectedTotal.getAmountExact());
+      assertThat(actualTotal.getAmountExact()).isEqualByComparingTo(expectedTotal.getAmountExact());
     }
 
     @Test
@@ -66,8 +64,8 @@ class CostCalculatorTest {
       MarkupPercentage markup = MarkupPercentage.zero();
 
       // When
-      List<InvoiceLineItem> items = costCalculator.calculateLineItems(
-          new BigDecimal("5.0000"), unitRate, markup);
+      List<InvoiceLineItem> items =
+          costCalculator.calculateLineItems(new BigDecimal("5.0000"), unitRate, markup);
 
       // Then
       assertThat(items).hasSize(1);
@@ -86,8 +84,8 @@ class CostCalculatorTest {
       MarkupPercentage markup = MarkupPercentage.ofBasisPoints(1500); // 15%
 
       // When
-      List<InvoiceLineItem> items = costCalculator.calculateLineItems(
-          BigDecimal.ZERO, unitRate, markup);
+      List<InvoiceLineItem> items =
+          costCalculator.calculateLineItems(BigDecimal.ZERO, unitRate, markup);
 
       // Then: each line item should individually be zero
       for (InvoiceLineItem item : items) {
@@ -106,9 +104,10 @@ class CostCalculatorTest {
       // Total marked-up rate per kWh = 0.20 * 1.15 = 0.23
       BigDecimal vendorBaseRate = new BigDecimal("0.2000");
       MarkupPercentage markup = MarkupPercentage.ofBasisPoints(1500);
-      BigDecimal markedUpAmount = vendorBaseRate
-          .multiply(BigDecimal.valueOf(1 + markup.getMultiplier()))
-          .setScale(4, java.math.RoundingMode.HALF_UP);
+      BigDecimal markedUpAmount =
+          vendorBaseRate
+              .multiply(BigDecimal.valueOf(1 + markup.getMultiplier()))
+              .setScale(4, java.math.RoundingMode.HALF_UP);
 
       Money unitRate = Money.of(markedUpAmount, "EUR");
       BigDecimal energyKwh = new BigDecimal("12.5000");
@@ -118,12 +117,10 @@ class CostCalculatorTest {
 
       // Then: total = 12.5 × 0.23 = 2.875
       Money expectedTotal = unitRate.multiply(energyKwh);
-      Money actualTotal = items.stream()
-          .map(InvoiceLineItem::getTotalAmount)
-          .reduce(Money.zeroEur(), Money::add);
+      Money actualTotal =
+          items.stream().map(InvoiceLineItem::getTotalAmount).reduce(Money.zeroEur(), Money::add);
 
-      assertThat(actualTotal.getAmountExact())
-          .isEqualByComparingTo(expectedTotal.getAmountExact());
+      assertThat(actualTotal.getAmountExact()).isEqualByComparingTo(expectedTotal.getAmountExact());
     }
   }
 }

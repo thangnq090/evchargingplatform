@@ -129,7 +129,7 @@ LOGIN_RES2=$(curl -s -X POST "${BASE_URL}/auth/login" \
 
 TOKEN2=$(echo "${LOGIN_RES2}" | grep -o '"accessToken":"[^"]*' | cut -d'"' -f4)
 
-CHANGE_PWD_RES=$(curl -s -X POST "${BASE_URL}/users/me/password" \
+CHANGE_PWD_RES=$(curl -s -w "\nHTTP_CODE:%{http_code}" -X POST "${BASE_URL}/users/me/password" \
   -H "Authorization: Bearer ${TOKEN2}" \
   -H "Content-Type: application/json" \
   -d "{
@@ -137,9 +137,13 @@ CHANGE_PWD_RES=$(curl -s -X POST "${BASE_URL}/users/me/password" \
     \"newPassword\": \"NewCustomerPass456!\"
   }")
 
-echo "Response: ${CHANGE_PWD_RES}"
+HTTP_CODE=$(echo "${CHANGE_PWD_RES}" | grep "HTTP_CODE:" | cut -d':' -f2)
+RESPONSE_BODY=$(echo "${CHANGE_PWD_RES}" | grep -v "HTTP_CODE:")
 
-if echo "${CHANGE_PWD_RES}" | grep -qi "success\|changed"; then
+echo "Response: ${RESPONSE_BODY}"
+echo "HTTP Status: ${HTTP_CODE}"
+
+if [ "${HTTP_CODE}" = "200" ]; then
   echo "${GREEN}✓ Password Changed Successfully.${NC}"
 else
   echo "${RED}✗ Password Change Failed${NC}"

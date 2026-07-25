@@ -3,7 +3,7 @@ name: rest-api-conventions
 description: >
   Use when generating REST controllers, response wrappers, DTOs, error handlers, or any
   HTTP-facing code. Defines response envelope, HTTP status mapping, pagination, and API
-  versioning (including Spring Boot 4's native version routing).
+  versioning (including Spring Boot 3.4's version routing).
 ---
 
 # REST API Conventions

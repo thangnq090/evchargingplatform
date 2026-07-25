@@ -501,7 +501,7 @@ Full-stack EV charging platform using a modular monolith architecture (ADR-0001)
 - Strong tooling (ESLint, Prettier, Vitest)
 
 **Backend**: Java 21 (LTS)
-- Spring Boot 4.x ecosystem
+- Spring Boot 3.4.x ecosystem
 - Virtual threads for high concurrency
 - Strong enterprise support and observability
 - Team expertise in Java/Spring
@@ -514,7 +514,7 @@ Full-stack EV charging platform using a modular monolith architecture (ADR-0001)
 - Rich component ecosystem
 - Easy deployment as static assets
 
-**Backend**: Spring Boot 4.x (latest stable)
+**Backend**: Spring Boot 3.4.x (Latest Stable GA)
 - Spring WebFlux for reactive endpoints where needed
 - Spring MVC for traditional REST
 - Spring Data JPA + Hibernate

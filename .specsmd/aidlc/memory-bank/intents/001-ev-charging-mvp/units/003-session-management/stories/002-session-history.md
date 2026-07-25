@@ -1,3 +1,13 @@
+---
+unit: 003-session-management
+intent: 001-ev-charging-mvp
+phase: construction
+status: complete
+implemented: true
+created: '2026-07-24T15:00:00Z'
+updated: '2026-07-24T15:00:00Z'
+---
+
 # Story: Customer Session History and Monthly Totals
 
 ## User Story

@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import com.evcharging.shared.kernel.Location;
 import com.evcharging.shared.kernel.StationId;
 import com.evcharging.shared.kernel.VendorId;
+import com.evcharging.station.StationApi;
 import com.evcharging.station.application.dto.ChangeStatusRequest;
 import com.evcharging.station.application.dto.CreateStationRequest;
 import com.evcharging.station.application.dto.StationResponse;
@@ -30,7 +31,7 @@ import com.evcharging.station.domain.service.StationDomainService;
 @Service
 @Validated
 @Transactional
-public class StationApplicationService {
+public class StationApplicationService implements StationApi {
 
   private final StationDomainService domainService;
   private final StationRepository stationRepository;
@@ -196,5 +197,17 @@ public class StationApplicationService {
             .collect(Collectors.toList()),
         station.getCreatedAt(),
         station.getUpdatedAt());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public StationDetails getStationDetails(StationId stationId) {
+    StationResponse station = getStation(stationId);
+    return new StationDetails(
+        UUID.fromString(station.id()),
+        station.status(),
+        station.vendorId(),
+        station.unitPriceTenthCents(),
+        station.connectors().stream().map(c -> new ConnectorDetails(c.id(), c.status())).toList());
   }
 }

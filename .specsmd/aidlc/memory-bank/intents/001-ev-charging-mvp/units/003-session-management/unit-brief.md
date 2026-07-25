@@ -2,9 +2,9 @@
 unit: 003-session-management
 intent: 001-ev-charging-mvp
 phase: inception
-status: stories-defined
-created: "2026-07-24T15:00:00Z"
-updated: "2026-07-25T15:00:00Z"
+status: complete
+created: '2026-07-24T15:00:00Z'
+updated: '2026-07-25T15:00:00Z'
 ---
 
 # Unit Brief: Session Management

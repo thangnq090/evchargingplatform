@@ -3,15 +3,30 @@ id: 001-identity-service-1
 unit: 001-identity-service
 intent: 001-ev-charging-mvp
 type: ddd-construction-bolt
-status: planned
+status: completed
 stories:
   - 001-001-admin-registration
   - 001-002-vendor-user-registration
 created: "2026-07-24T15:00:00Z"
-started: null
+started: "2026-07-24T20:17:17Z"
 completed: null
-current_stage: null
-stages_completed: []
+current_stage: implement
+stages_completed:
+  - name: model
+    completed: "2026-07-24T20:23:32Z"
+    artifact: ddd-01-domain-model.md
+  - name: design
+    completed: "2026-07-24T20:32:49Z"
+    artifact: ddd-02-technical-design.md
+  - name: adr-analysis
+    completed: "2026-07-24T20:39:06Z"
+    artifact: "No new ADRs - ADR-007, ADR-017 cover existing decisions"
+  - name: implement
+    completed: "2026-07-24T20:50:00Z"
+    artifact: "backend/identity-module"
+  - name: test
+    completed: "2026-07-24T20:52:50Z"
+    artifact: "scripts/smoke-test-identity-bolt1.sh"
 
 requires_bolts: []
 enables_bolts:
@@ -45,10 +60,11 @@ Implement core user registration: Admin (email+password), Vendor users (VENDOR_A
 **Definition**: `.specsmd/aidlc/templates/construction/bolt-types/ddd-construction-bolt.md`
 
 ## Stages
-- [ ] **1. Model**: Pending → Domain model (User, Role, Permission, Vendor)
-- [ ] **2. Design**: Pending → Technical design (ports, services, API)
-- [ ] **3. Implement**: Pending → Source code
-- [ ] **4. Test**: Pending → Test report
+- [x] **1. Model**: Complete → Domain model (User, Role, Permission, Vendor)
+- [x] **2. Design**: Complete → Technical design (ports, services, API)
+- [x] **3. ADR Analysis**: Complete → No new ADRs (ADR-007, ADR-017 cover all decisions)
+- [x] **4. Implement**: Complete → Source code generated in identity-module
+- [x] **5. Test**: Complete → Unit tests & cURL integration script (scripts/smoke-test-identity-bolt1.sh)
 
 ## Dependencies
 

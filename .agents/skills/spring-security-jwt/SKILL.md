@@ -8,10 +8,8 @@ description: >
 
 # Spring Security — JWT
 
-Spring Boot 4.x ships **Spring Security 7**: the lambda DSL is the *only* style — `and()`,
-`authorizeRequests()`, `antMatchers()`, and `WebSecurityConfigurerAdapter` no longer exist, and
-`AntPathRequestMatcher`/`MvcRequestMatcher` are replaced by `PathPatternRequestMatcher`
-(`requestMatchers("/path/**")` uses it under the hood).
+Spring Boot 3.4.x ships **Spring Security 6.4.x**: the lambda DSL is the standard style — `and()`,
+`authorizeRequests()`, `antMatchers()`, and `WebSecurityConfigurerAdapter` no longer exist.
 
 ## Dependencies
 

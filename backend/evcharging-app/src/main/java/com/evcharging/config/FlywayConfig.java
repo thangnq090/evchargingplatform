@@ -1,11 +1,8 @@
 package com.evcharging.config;
 
 import java.util.List;
-
-import javax.sql.DataSource;
-
 import org.flywaydb.core.Flyway;
-import org.springframework.boot.flyway.autoconfigure.FlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.flyway.FlywayConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,32 +33,13 @@ public class FlywayConfig {
           "classpath:db/migration/device-gateway-module");
 
   @Bean
-  public FlywayConfigurationCustomizer flywayConfigurationCustomizer(DataSource dataSource) {
-    return flyway ->
-        flyway
+  public FlywayConfigurationCustomizer flywayConfigurationCustomizer() {
+    return configuration ->
+        configuration
             .locations(MODULE_MIGRATION_LOCATIONS.toArray(String[]::new))
             .baselineOnMigrate(true)
             .validateOnMigrate(true)
             .outOfOrder(false)
             .table("evcharging_platform_flyway_schema_history");
-  }
-
-  /**
-   * Additional Flyway bean for programmatic access if needed. The main configuration is handled by
-   * Spring Boot auto-configuration customized by {@link
-   * #flywayConfigurationCustomizer(DataSource)}.
-   */
-  @Bean
-  public Flyway flyway(DataSource dataSource) {
-    Flyway flyway =
-        Flyway.configure()
-            .dataSource(dataSource)
-            .locations(MODULE_MIGRATION_LOCATIONS.toArray(String[]::new))
-            .baselineOnMigrate(true)
-            .validateOnMigrate(true)
-            .outOfOrder(false)
-            .table("evcharging_platform_flyway_schema_history")
-            .load();
-    return flyway;
   }
 }

@@ -1,11 +1,10 @@
-package com.evcharging.gateway.config;
+package com.evcharging.shared.security;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,13 +14,18 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.stereotype.Component;
 
 /**
- * Converts JWT tokens to Spring Security Authentication tokens.
+ * Converts JWT tokens to Spring Security Authentication tokens across platform modules.
  *
- * <p>Extracts roles and permissions from Keycloak-style JWT claims: - realm_access.roles -
- * resource_access.{client}.roles - Custom claims: permissions, vendor_id
+ * <p>Extracts roles and permissions from JWT claims:
+ * <ul>
+ *   <li>{@code realm_access.roles}
+ *   <li>{@code resource_access.{client}.roles}
+ *   <li>Top-level {@code role} and {@code roles}
+ *   <li>Custom claims: {@code permissions}, {@code vendor_id}
+ * </ul>
  */
 @Component
-public class GatewayJwtAuthenticationConverter
+public class PlatformJwtAuthenticationConverter
     implements Converter<Jwt, AbstractAuthenticationToken> {
 
   private static final String REALM_ACCESS = "realm_access";
@@ -55,12 +59,28 @@ public class GatewayJwtAuthenticationConverter
   }
 
   private List<GrantedAuthority> extractRealmRoles(Jwt jwt) {
+    List<String> roles = new java.util.ArrayList<>();
+
+    // 1. Check realm_access.roles
     Map<String, Object> realmAccess = jwt.getClaim(REALM_ACCESS);
-    if (realmAccess == null || !realmAccess.containsKey(ROLES)) {
-      return List.of();
+    if (realmAccess != null && realmAccess.containsKey(ROLES)) {
+      @SuppressWarnings("unchecked")
+      List<String> r = (List<String>) realmAccess.get(ROLES);
+      roles.addAll(r);
     }
-    @SuppressWarnings("unchecked")
-    List<String> roles = (List<String>) realmAccess.get(ROLES);
+
+    // 2. Check top-level role string
+    String singleRole = jwt.getClaim("role");
+    if (singleRole != null) {
+      roles.add(singleRole.replaceFirst("^ROLE_", ""));
+    }
+
+    // 3. Check top-level roles list
+    List<String> topRoles = jwt.getClaim("roles");
+    if (topRoles != null) {
+      topRoles.forEach(r -> roles.add(r.replaceFirst("^ROLE_", "")));
+    }
+
     return roles.stream()
         .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
         .collect(Collectors.toList());

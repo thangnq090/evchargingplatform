@@ -62,7 +62,8 @@ class IdentitySecurityConfig {
                 auth.pathMatchers(
                         "/api/v1/identity/auth/login",
                         "/api/v1/identity/auth/register-customer",
-                        "/api/v1/identity/auth/invitations/accept")
+                        "/api/v1/identity/auth/invitations/accept",
+                        "/api/v1/identity/auth/refresh")
                     .permitAll()
                     .pathMatchers("/api/v1/identity/vendors/**")
                     .hasRole("ADMIN")

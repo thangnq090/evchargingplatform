@@ -21,6 +21,7 @@ public class User {
   private final UUID vendorId;
   private final String accountNumber;
   private UserStatus status;
+  private boolean mustChangePassword;
   private final Instant createdAt;
   private Instant updatedAt;
 
@@ -34,6 +35,7 @@ public class User {
       UUID vendorId,
       String accountNumber,
       UserStatus status,
+      boolean mustChangePassword,
       Instant createdAt,
       Instant updatedAt) {
     this.id = id;
@@ -45,6 +47,7 @@ public class User {
     this.vendorId = vendorId;
     this.accountNumber = accountNumber;
     this.status = status;
+    this.mustChangePassword = mustChangePassword;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -68,6 +71,7 @@ public class User {
         null,
         null,
         UserStatus.ACTIVE,
+        false,
         now,
         now);
   }
@@ -101,6 +105,7 @@ public class User {
         vendorId,
         null,
         UserStatus.ACTIVE,
+        false,
         now,
         now);
   }
@@ -128,6 +133,7 @@ public class User {
         null,
         accountNumber,
         UserStatus.ACTIVE,
+        false,
         now,
         now);
   }
@@ -148,7 +154,18 @@ public class User {
       Instant createdAt,
       Instant updatedAt) {
     return reconstitute(
-        id, name, email, passwordHash, null, role, vendorId, null, status, createdAt, updatedAt);
+        id,
+        name,
+        email,
+        passwordHash,
+        null,
+        role,
+        vendorId,
+        null,
+        status,
+        false,
+        createdAt,
+        updatedAt);
   }
 
   /** Reconstitute a User with phone and account number from persistence. */
@@ -162,6 +179,7 @@ public class User {
       UUID vendorId,
       String accountNumber,
       UserStatus status,
+      boolean mustChangePassword,
       Instant createdAt,
       Instant updatedAt) {
     return new User(
@@ -174,6 +192,35 @@ public class User {
         vendorId,
         accountNumber,
         status,
+        mustChangePassword,
+        createdAt,
+        updatedAt);
+  }
+
+  /** Reconstitute a User with phone and account number from persistence. (Legacy) */
+  public static User reconstitute(
+      UUID id,
+      String name,
+      String email,
+      String passwordHash,
+      String phone,
+      Role role,
+      UUID vendorId,
+      String accountNumber,
+      UserStatus status,
+      Instant createdAt,
+      Instant updatedAt) {
+    return reconstitute(
+        id,
+        name,
+        email,
+        passwordHash,
+        phone,
+        role,
+        vendorId,
+        accountNumber,
+        status,
+        false,
         createdAt,
         updatedAt);
   }
@@ -184,6 +231,32 @@ public class User {
       throw new IllegalStateException("Only ACTIVE users can be suspended");
     }
     this.status = UserStatus.SUSPENDED;
+    this.updatedAt = Instant.now();
+  }
+
+  /**
+   * Initiate password reset.
+   *
+   * @param temporaryPasswordHash the BCrypt hash of the temporary password
+   */
+  public void initiatePasswordReset(String temporaryPasswordHash) {
+    this.passwordHash = temporaryPasswordHash;
+    this.mustChangePassword = true;
+    this.status = UserStatus.PASSWORD_RESET_REQUIRED;
+    this.updatedAt = Instant.now();
+  }
+
+  /**
+   * Change password.
+   *
+   * @param newPasswordHash the BCrypt hash of the new password
+   */
+  public void changePassword(String newPasswordHash) {
+    this.passwordHash = newPasswordHash;
+    this.mustChangePassword = false;
+    if (this.status == UserStatus.PASSWORD_RESET_REQUIRED) {
+      this.status = UserStatus.ACTIVE;
+    }
     this.updatedAt = Instant.now();
   }
 
@@ -230,6 +303,10 @@ public class User {
 
   public UserStatus getStatus() {
     return status;
+  }
+
+  public boolean isMustChangePassword() {
+    return mustChangePassword;
   }
 
   public Instant getCreatedAt() {

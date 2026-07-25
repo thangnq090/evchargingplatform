@@ -3,14 +3,29 @@ id: 003-identity-service-3
 unit: 001-identity-service
 intent: 001-ev-charging-mvp
 type: ddd-construction-bolt
-status: planned
+status: completed
 stories:
   - 001-005-rbac-credentials
 created: "2026-07-24T15:00:00Z"
-started: null
-completed: null
+started: "2026-07-25T07:18:00Z"
+completed: "2026-07-25T08:12:00Z"
 current_stage: null
-stages_completed: []
+stages_completed:
+  - name: domain-model
+    completed: "2026-07-25T07:37:00Z"
+    artifact: ddd-01-domain-model.md
+  - name: technical-design
+    completed: "2026-07-25T07:41:00Z"
+    artifact: ddd-02-technical-design.md
+  - name: adr-analysis
+    completed: "2026-07-25T07:45:00Z"
+    artifact: null
+  - name: implement
+    completed: "2026-07-25T08:07:00Z"
+    artifact: null
+  - name: test
+    completed: "2026-07-25T08:12:00Z"
+    artifact: null
 
 requires_bolts:
   - 002-identity-service-2
@@ -38,10 +53,11 @@ RBAC enforcement, credential management (password reset), and refresh token rota
 **Type**: DDD Construction Bolt
 
 ## Stages
-- [ ] **1. Model**: Pending
-- [ ] **2. Design**: Pending
-- [ ] **3. Implement**: Pending
-- [ ] **4. Test**: Pending
+- [x] **1. Model**: Complete → `ddd-01-domain-model.md`
+- [x] **2. Design**: Complete → `ddd-02-technical-design.md`
+- [x] **3. ADR Analysis**: Complete
+- [/] **4. Implement**: In Progress
+- [ ] **5. Test**: Pending
 
 ## Dependencies
 

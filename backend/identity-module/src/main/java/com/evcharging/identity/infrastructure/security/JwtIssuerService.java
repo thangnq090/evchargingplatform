@@ -64,7 +64,9 @@ class JwtIssuerService implements TokenIssuerPort {
             .compact();
 
     long expiresInSeconds = accessTokenExpiryMs / 1000;
-    return new LoginResponse(token, expiresInSeconds, user.getId(), roleName, user.getVendorId());
+    // Note: refreshToken and mustChangePassword are set by AuthenticationApplicationService
+    return new LoginResponse(
+        token, expiresInSeconds, user.getId(), roleName, user.getVendorId(), null, false);
   }
 
   SecretKey signingKey() {

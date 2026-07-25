@@ -4,5 +4,6 @@ package com.evcharging.identity.domain.model;
 public enum UserStatus {
   ACTIVE,
   PENDING_INVITATION,
-  SUSPENDED
+  SUSPENDED,
+  PASSWORD_RESET_REQUIRED
 }

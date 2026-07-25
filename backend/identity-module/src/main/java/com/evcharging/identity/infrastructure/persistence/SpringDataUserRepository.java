@@ -13,4 +13,8 @@ interface SpringDataUserRepository extends JpaRepository<UserDbEntity, UUID> {
   boolean existsByEmail(String email);
 
   boolean existsByAccountNumber(String accountNumber);
+
+  java.util.List<UserDbEntity> findByVendorId(UUID vendorId);
+
+  java.util.List<UserDbEntity> findByRole(com.evcharging.identity.domain.model.Role role);
 }

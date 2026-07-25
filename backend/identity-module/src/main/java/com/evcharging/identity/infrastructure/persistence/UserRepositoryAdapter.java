@@ -47,4 +47,18 @@ class UserRepositoryAdapter implements UserRepository {
   public boolean existsByAccountNumber(String accountNumber) {
     return jpa.existsByAccountNumber(accountNumber);
   }
+
+  @Override
+  public java.util.List<User> findAllByVendorId(UUID vendorId) {
+    return jpa.findByVendorId(vendorId).stream()
+        .map(UserDbEntity::toDomain)
+        .collect(java.util.stream.Collectors.toList());
+  }
+
+  @Override
+  public java.util.List<User> findAllByRole(com.evcharging.identity.domain.model.Role role) {
+    return jpa.findByRole(role).stream()
+        .map(UserDbEntity::toDomain)
+        .collect(java.util.stream.Collectors.toList());
+  }
 }

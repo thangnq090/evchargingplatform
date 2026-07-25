@@ -60,6 +60,9 @@ class UserDbEntity implements Persistable<UUID> {
   @Column(nullable = false)
   private UserStatus status;
 
+  @Column(name = "must_change_password", nullable = false)
+  private boolean mustChangePassword;
+
   @CreationTimestamp
   @Column(name = "created_at", updatable = false)
   private Instant createdAt;
@@ -92,6 +95,7 @@ class UserDbEntity implements Persistable<UUID> {
     entity.vendorId = user.getVendorId();
     entity.accountNumber = user.getAccountNumber();
     entity.status = user.getStatus();
+    entity.mustChangePassword = user.isMustChangePassword();
     entity.createdAt = user.getCreatedAt();
     entity.updatedAt = user.getUpdatedAt();
     entity.isNew = isNew;
@@ -110,6 +114,7 @@ class UserDbEntity implements Persistable<UUID> {
         vendorId,
         accountNumber,
         status,
+        mustChangePassword,
         createdAt,
         updatedAt);
   }

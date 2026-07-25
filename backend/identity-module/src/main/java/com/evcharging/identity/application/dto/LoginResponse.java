@@ -12,4 +12,10 @@ import java.util.UUID;
  * @param vendorId the authenticated user's vendor ID (null for ADMIN)
  */
 public record LoginResponse(
-    String accessToken, long expiresIn, UUID userId, String role, UUID vendorId) {}
+    String accessToken,
+    long expiresIn,
+    UUID userId,
+    String role,
+    UUID vendorId,
+    String refreshToken,
+    boolean mustChangePassword) {}

@@ -1,0 +1,168 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # PostgreSQL with PostGIS (Database)
+  # =============================================================================
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: evcharging-postgres
+    environment:
+      POSTGRES_DB: evcharging
+      POSTGRES_USER: evcharging
+      POSTGRES_PASSWORD: evcharging
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/shared-kernel/src/main/resources/db/migration:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evcharging -d evcharging"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - evcharging-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # =============================================================================
+  # Redis (Caching, Sessions, Rate Limiting)
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: evcharging-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - evcharging-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # =============================================================================
+  # EV Charging Application (Spring Boot Modular Monolith)
+  # =============================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: builder
+    container_name: evcharging-app
+    environment:
+      # Spring Profile
+      SPRING_PROFILES_ACTIVE: docker
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: evcharging
+      DB_USER: evcharging
+      DB_PASSWORD: evcharging
+      DB_POOL_MAX_SIZE: 20
+      DB_POOL_MIN_IDLE: 5
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # JWT
+      JWT_JWKS_URI: http://localhost:8080/api/v1/identity/.well-known/jwks.json
+      JWT_ISSUER_URI: http://localhost:8080/realms/evcharging
+      # Server
+      SERVER_PORT: 8080
+      # Java
+      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseZGC"
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health/liveness"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - evcharging-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+
+  # =============================================================================
+  # Mailhog (Email Testing)
+  # =============================================================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: evcharging-mailhog
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - evcharging-network
+
+  # =============================================================================
+  # LocalStack (AWS Local Mocking - for S3, SQS, etc.)
+  # =============================================================================
+  localstack:
+    image: localstack/localstack:latest
+    container_name: evcharging-localstack
+    environment:
+      SERVICES: s3,sqs,secretsmanager
+      DEBUG: 1
+      DEFAULT_REGION: eu-central-1
+    ports:
+      - "4566:4566"
+      - "4510-4559:4510-4559"
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - evcharging-network
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  evcharging-network:
+    driver: bridge
+    name: evcharging-network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+    name: evcharging-postgres-data
+  redis_data:
+    driver: local
+    name: evcharging-redis-data
+  localstack_data:
+    driver: local
+    name: evcharging-localstack-data

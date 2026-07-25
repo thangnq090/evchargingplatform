@@ -1,0 +1,202 @@
+# EV Charging Platform - Main Application Configuration
+# =========================================================
+# Spring Application
+spring:
+  application:
+    name: evcharging-platform
+
+  # Profiles
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # Datasource (configured per-module via Flyway)
+  datasource:
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:20}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # JPA / Hibernate
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        jdbc:
+          time_zone: UTC
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # Flyway - Multi-module migrations
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    out-of-order: false
+    locations: classpath:db/migration/{module}
+    schemas: ${DB_SCHEMA:public}
+    table: ${spring.application.name}_flyway_schema_history
+
+  # Jackson
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+
+  # Web
+  web:
+    resources:
+      cache:
+        period: 3600
+      chain:
+        compressed: true
+
+# Server
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+    min-response-size: 1024
+
+# Actuator / Management
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,loggers,env,beans,mappings,conditions,threaddump
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+  health:
+    db:
+      enabled: true
+    redis:
+      enabled: true
+  info:
+    env:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5,0.95,0.99
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+# SpringDoc OpenAPI
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+  packages-to-scan: com.evcharging
+  paths-to-match: /api/**
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
+
+# Logging
+logging:
+  level:
+    com.evcharging: DEBUG
+    org.springframework.modulith: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.flywaydb: INFO
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] %-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+  file:
+    name: logs/evcharging-${spring.profiles.active:-dev}.log
+    max-size: 100MB
+    max-history: 30
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+
+# Application Info
+info:
+  app:
+    name: EV Charging Platform
+    description: Modular Monolith for EV Charging Management
+    version: "@project.version@"
+    java-version: "@java.version@"
+    spring-boot-version: "@spring-boot.version@"
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:evcharging_dev}
+    username: ${DB_USER:evcharging}
+    password: ${DB_PASSWORD:evcharging}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    locations: classpath:db/migration/evcharging-app,classpath:db/migration/gateway-module,classpath:db/migration/identity-module,classpath:db/migration/station-module,classpath:db/migration/session-module,classpath:db/migration/billing-module,classpath:db/migration/payment-module,classpath:db/migration/vehicle-module,classpath:db/migration/notification-module,classpath:db/migration/device-gateway-module
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    com.evcharging: DEBUG
+    org.springframework.modulith: DEBUG
+
+---
+# Test Profile
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:tc:postgresql:16:///evcharging_test
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+
+  flyway:
+    locations: classpath:db/migration/evcharging-app,classpath:db/migration/gateway-module,classpath:db/migration/identity-module,classpath:db/migration/station-module,classpath:db/migration/session-module,classpath:db/migration/billing-module,classpath:db/migration/payment-module,classpath:db/migration/vehicle-module,classpath:db/migration/notification-module,classpath:db/migration/device-gateway-module
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    com.evcharging: DEBUG
+    org.testcontainers: INFO

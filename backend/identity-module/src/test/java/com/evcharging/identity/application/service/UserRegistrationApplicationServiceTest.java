@@ -67,7 +67,7 @@ class UserRegistrationApplicationServiceTest {
 
       assertThat(result.email()).isEqualTo("alice@example.com");
       assertThat(result.role()).isEqualTo(Role.ADMIN);
-      then(eventPublisher).should().publishEvent(any());
+      then(eventPublisher).should().publishEvent(any(Object.class));
     }
 
     @Test
@@ -111,7 +111,7 @@ class UserRegistrationApplicationServiceTest {
       assertThat(result.vendorId()).isEqualTo(vendorId);
       assertThat(result.vendorName()).isEqualTo("ACME Corp");
       assertThat(result.invitedEmail()).isEqualTo("bob@acme.com");
-      then(eventPublisher).should(times(2)).publishEvent(any());
+      then(eventPublisher).should(times(2)).publishEvent(any(Object.class));
     }
 
     @Test

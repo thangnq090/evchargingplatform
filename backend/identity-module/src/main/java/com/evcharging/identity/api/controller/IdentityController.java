@@ -1,4 +1,4 @@
-package com.evcharging.identity.presentation;
+package com.evcharging.identity.api.controller;
 
 import com.evcharging.identity.application.dto.AcceptInvitationRequest;
 import com.evcharging.identity.application.dto.AddVendorUserRequest;
@@ -32,7 +32,7 @@ import reactor.core.publisher.Mono;
  */
 @RestController
 @RequestMapping("/api/v1/identity")
-class IdentityController {
+public class IdentityController {
 
   private final UserRegistrationApplicationService registrationService;
   private final AuthenticationApplicationService authenticationService;

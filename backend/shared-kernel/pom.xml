@@ -62,6 +62,12 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
 
+        <!-- Spring Modulith (for @NamedInterface in package-info.java) -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-core</artifactId>
+        </dependency>
+
         <!-- Project Reactor -->
         <dependency>
             <groupId>io.projectreactor</groupId>

@@ -12,3 +12,6 @@ logs
 npm-debug.log*
 
 .vscode
+*.iml
+out
+.opencode

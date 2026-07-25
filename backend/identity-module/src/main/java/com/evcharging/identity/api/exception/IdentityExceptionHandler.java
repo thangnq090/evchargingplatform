@@ -1,5 +1,6 @@
-package com.evcharging.identity.presentation;
+package com.evcharging.identity.api.exception;
 
+import com.evcharging.identity.api.controller.IdentityController;
 import com.evcharging.shared.api.ApiResponse;
 import java.util.List;
 import org.slf4j.Logger;
@@ -14,7 +15,8 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.ResponseStatusException;
 
 /** Global exception handler for the identity module WebFlux REST layer. */
-@RestControllerAdvice(basePackages = "com.evcharging.identity.presentation")
+@RestControllerAdvice(
+        assignableTypes = { IdentityController.class })
 class IdentityExceptionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(IdentityExceptionHandler.class);

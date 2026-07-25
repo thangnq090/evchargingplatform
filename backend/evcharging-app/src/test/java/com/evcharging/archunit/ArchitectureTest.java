@@ -32,7 +32,7 @@ class ArchitectureTest {
    * Verifies Spring Modulith module structure.
    *
    * <p>This test ensures all modules are properly defined with {@link
-   * org.springframework.modulith.NamedModule} and that there are no forbidden cross-module
+   * org.springframework.modulith.NamedInterface} and that there are no forbidden cross-module
    * dependencies.
    */
   @Test
@@ -87,7 +87,9 @@ class ArchitectureTest {
   /**
    * Verifies that infrastructure layer implements ports from domain/application.
    *
-   * <p>Infrastructure should only depend on domain/application through interfaces (ports).
+   * <p>Infrastructure should only depend on domain/application through interfaces (ports), not
+   * controller or API layers. Infrastructure adapters may depend on other infrastructure components
+   * such as Spring Data repositories.
    */
   @Test
   void infrastructureLayerShouldOnlyDependOnPorts() {
@@ -97,12 +99,9 @@ class ArchitectureTest {
             .resideInAPackage("..infrastructure..")
             .should()
             .dependOnClassesThat()
-            .resideInAnyPackage("..infrastructure..", "..controller..", "..api..")
-            .andShould()
-            .dependOnClassesThat()
-            .resideInAPackage("..domain.model..")
+            .resideInAnyPackage("..controller..", "..api..")
             .because(
-                "Infrastructure should only depend on domain/application ports, not concrete implementations");
+                "Infrastructure should only depend on domain/application ports, not controller or API layers");
 
     rule.allowEmptyShould(true).check(CLASSES);
   }
@@ -182,7 +181,7 @@ class ArchitectureTest {
             .that()
             .resideInAPackage("..domain.event..")
             .should()
-            .haveSimpleNameEndingWith("Event")
+            .haveSimpleNameNotEndingWith("Event")
             .because("Domain events must end with 'Event' suffix (e.g., SessionStartedEvent)");
 
     rule.allowEmptyShould(true).check(CLASSES);

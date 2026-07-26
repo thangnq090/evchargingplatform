@@ -138,4 +138,13 @@ public class SessionController {
         .map(sessions -> sessions.stream().map(SessionResponse::from).toList())
         .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
   }
+
+  @GetMapping("/search")
+  @PreAuthorize("hasRole('ADMIN')")
+  public Mono<
+          ResponseEntity<ApiResponse<List<com.evcharging.session.api.dto.SessionSearchResponse>>>>
+      searchSessions(@RequestParam(required = false) String q) {
+    return Mono.fromCallable(() -> service.searchSessions(q))
+        .map(results -> ResponseEntity.ok(ApiResponse.ok(results)));
+  }
 }

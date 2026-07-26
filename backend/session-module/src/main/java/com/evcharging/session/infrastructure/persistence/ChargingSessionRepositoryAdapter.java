@@ -1,5 +1,6 @@
 package com.evcharging.session.infrastructure.persistence;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -59,6 +60,34 @@ public class ChargingSessionRepositoryAdapter implements ChargingSessionReposito
         .findByStationIdAndStartTimeBetween(stationId.getValue(), start, end)
         .stream()
         .map(ChargingSessionJpaEntity::toDomain)
+        .toList();
+  }
+
+  @Override
+  public List<ChargingSessionRepository.SessionSearchResult> searchSessions(String query) {
+    List<SpringDataChargingSessionRepository.SessionSearchResultProjection> projections =
+        springDataRepository.searchSessions(query);
+    return projections.stream()
+        .map(
+            p ->
+                new ChargingSessionRepository.SessionSearchResult(
+                    p.getId(),
+                    p.getStationId(),
+                    p.getConnectorId(),
+                    p.getCustomerId(),
+                    p.getCustomerAccountNumber(),
+                    p.getVehicleId(),
+                    p.getRegistrationPlate(),
+                    p.getStatus(),
+                    p.getStartTime(),
+                    p.getEndTime(),
+                    p.getUnitRateAmount() != null ? p.getUnitRateAmount() : BigDecimal.ZERO,
+                    p.getUnitRateCurrency() != null ? p.getUnitRateCurrency() : "EUR",
+                    p.getTotalEnergyKwh(),
+                    p.getTotalAmountAmount() != null ? p.getTotalAmountAmount() : BigDecimal.ZERO,
+                    p.getTotalAmountCurrency() != null ? p.getTotalAmountCurrency() : "EUR",
+                    p.getErrorCode(),
+                    p.getCreatedAt()))
         .toList();
   }
 }

@@ -39,6 +39,15 @@ public class SessionExceptionHandler {
         .body(ApiResponse.error("UNPROCESSABLE_ENTITY", ex.getMessage()));
   }
 
+  @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+  ResponseEntity<ApiResponse<Void>> handleAccessDenied(
+      org.springframework.security.access.AccessDeniedException ex) {
+    return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        .body(
+            ApiResponse.error(
+                "FORBIDDEN", ex.getMessage() != null ? ex.getMessage() : "Access denied"));
+  }
+
   @ExceptionHandler(Exception.class)
   ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
     log.error("Unhandled exception in session module", ex);

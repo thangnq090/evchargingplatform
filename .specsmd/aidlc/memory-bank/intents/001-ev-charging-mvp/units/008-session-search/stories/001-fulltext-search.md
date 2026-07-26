@@ -1,3 +1,10 @@
+---
+id: 001-fulltext-search
+title: PostgreSQL Full-Text Search for Sessions
+status: complete
+implemented: true
+---
+
 # Story: PostgreSQL Full-Text Search for Sessions
 
 ## User Story

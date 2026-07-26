@@ -3,22 +3,26 @@ id: 010-session-search-1
 unit: 008-session-search
 intent: 001-ev-charging-mvp
 type: simple-construction-bolt
-status: planned
+status: complete
 stories:
-  - 008-001-fulltext-search
-created: "2026-07-24T15:00:00Z"
-started: null
-completed: null
+  - 001-fulltext-search
+created: '2026-07-24T15:00:00Z'
+started: '2026-07-26T16:01:03Z'
+completed: '2026-07-26T04:11:31Z'
 current_stage: null
-stages_completed: []
-
+stages_completed:
+  - name: plan
+    completed: '2026-07-26T16:03:15Z'
+    artifact: implementation-plan.md
+  - name: implement
+    completed: '2026-07-26T16:10:30Z'
+    artifact: implementation-walkthrough.md
 requires_bolts:
   - 005-session-management-1
   - 008-vehicle-management-1
 enables_bolts: []
 requires_units: []
 blocks: false
-
 complexity:
   avg_complexity: 2
   avg_uncertainty: 1

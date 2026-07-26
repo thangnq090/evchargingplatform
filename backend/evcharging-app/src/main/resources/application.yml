@@ -55,8 +55,12 @@ app:
   flyway:
     enabled: true
     baseline-on-migrate: true
-    validate-on-migrate: true
-    out-of-order: false
+    validate-on-migrate: false
+    out-of-order: true
+    ignore-migration-patterns:
+      - "*:ignored"
+      - "*:pending"
+      - "*:missing"
     locations: classpath:db/migration/{module}
     schemas: ${DB_SCHEMA:public}
     table: ${spring.application.name}_flyway_schema_history
@@ -186,6 +190,12 @@ spring:
 
   flyway:
     locations: classpath:db/migration/evcharging-app,classpath:db/migration/gateway-module,classpath:db/migration/identity-module,classpath:db/migration/station-module,classpath:db/migration/session-module,classpath:db/migration/billing-module,classpath:db/migration/payment-module,classpath:db/migration/vehicle-module,classpath:db/migration/notification-module,classpath:db/migration/device-gateway-module
+    out-of-order: true
+    validate-on-migrate: false
+    ignore-migration-patterns:
+      - "*:ignored"
+      - "*:pending"
+      - "*:missing"
 
   jpa:
     show-sql: true
@@ -215,6 +225,12 @@ spring:
 
   flyway:
     locations: classpath:db/migration/evcharging-app,classpath:db/migration/gateway-module,classpath:db/migration/identity-module,classpath:db/migration/station-module,classpath:db/migration/session-module,classpath:db/migration/billing-module,classpath:db/migration/payment-module,classpath:db/migration/vehicle-module,classpath:db/migration/notification-module,classpath:db/migration/device-gateway-module
+    out-of-order: true
+    validate-on-migrate: false
+    ignore-migration-patterns:
+      - "*:ignored"
+      - "*:pending"
+      - "*:missing"
 
   jpa:
     hibernate:

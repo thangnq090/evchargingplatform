@@ -52,7 +52,7 @@
 - [ ] **007-002**: Vendor Dashboard API endpoints
 
 #### unit: 008-session-search
-- [ ] **008-001**: PostgreSQL FTS index and search endpoint
+- [x] **008-001**: PostgreSQL FTS index and search endpoint
 
 #### unit: 009-notification
 - [ ] **009-001**: Console log notification channel

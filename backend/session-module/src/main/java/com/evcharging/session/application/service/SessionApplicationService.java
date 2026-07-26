@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.evcharging.identity.VendorMarkupApi;
 import com.evcharging.session.SessionApi;
+import com.evcharging.session.api.dto.SessionSearchResponse;
 import com.evcharging.session.application.events.SessionCompletedEvent;
 import com.evcharging.session.domain.event.MeterReadingRecordedEvent;
 import com.evcharging.session.domain.event.SessionFailedEvent;
@@ -204,6 +205,35 @@ public class SessionApplicationService implements SessionApi {
     Instant end = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusNanos(1);
 
     return sessionRepository.findByStationIdAndStartTimeBetween(stationId, start, end);
+  }
+
+  /** Full-text search across sessions (admin only). */
+  @Transactional(readOnly = true)
+  public List<SessionSearchResponse> searchSessions(String query) {
+    return sessionRepository.searchSessions(query != null ? query.trim() : null).stream()
+        .map(
+            r ->
+                new SessionSearchResponse(
+                    r.id(),
+                    r.stationId(),
+                    r.connectorId(),
+                    r.customerId(),
+                    r.customerAccountNumber(),
+                    r.vehicleId(),
+                    r.registrationPlate(),
+                    r.status(),
+                    r.startTime(),
+                    r.endTime(),
+                    Money.of(
+                        r.unitRateAmount() != null ? r.unitRateAmount() : BigDecimal.ZERO,
+                        r.unitRateCurrency() != null ? r.unitRateCurrency() : "EUR"),
+                    r.totalEnergyKwh(),
+                    Money.of(
+                        r.totalAmountAmount() != null ? r.totalAmountAmount() : BigDecimal.ZERO,
+                        r.totalAmountCurrency() != null ? r.totalAmountCurrency() : "EUR"),
+                    r.errorCode(),
+                    r.createdAt()))
+        .toList();
   }
 
   @Override

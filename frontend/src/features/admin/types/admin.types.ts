@@ -36,7 +36,7 @@ export interface UserAccount {
   id: string;
   email: string;
   fullName: string;
-  role: 'ROLE_ADMIN' | 'ROLE_VENDOR_ADMIN' | 'ROLE_VENDOR_USER' | 'ROLE_CUSTOMER';
+  role: 'ADMIN' | 'VENDOR_ADMIN' | 'VENDOR_USER' | 'CUSTOMER';
   vendorId?: string;
   vendorName?: string;
   status: 'ACTIVE' | 'LOCKED' | 'SUSPENDED';

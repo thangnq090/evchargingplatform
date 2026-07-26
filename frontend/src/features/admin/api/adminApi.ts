@@ -83,7 +83,16 @@ export const adminApi = {
 
   // GET /api/v1/identity/users
   async getUsers(): Promise<UserAccount[]> {
-    return await apiClient.get('/identity/users');
+    const res: any[] = await apiClient.get('/identity/users');
+    return res.map((u: any) => ({
+      id: u.id,
+      email: u.email,
+      fullName: u.name,
+      role: u.role,
+      vendorId: u.vendorId,
+      status: u.status,
+      createdAt: u.createdAt,
+    }));
   },
 
   // POST /api/v1/identity/users/{userId}/status

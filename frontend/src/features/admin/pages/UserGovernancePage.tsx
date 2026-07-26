@@ -40,27 +40,27 @@ export const UserGovernancePage: React.FC = () => {
   const filteredUsers =
     filterRole === 'ALL' ? users : users.filter((u) => u.role === filterRole);
 
-  const getRoleBadge = (role: UserAccount['role']) => {
+  const getRoleBadge = (role: string) => {
     switch (role) {
-      case 'ROLE_ADMIN':
+      case 'ADMIN':
         return (
           <span className="px-2 py-0.5 text-[10px] font-semibold bg-red-950 text-red-400 border border-red-800 rounded-full">
             Platform Admin
           </span>
         );
-      case 'ROLE_VENDOR_ADMIN':
+      case 'VENDOR_ADMIN':
         return (
           <span className="px-2 py-0.5 text-[10px] font-semibold bg-purple-950 text-purple-400 border border-purple-800 rounded-full">
             Vendor Admin
           </span>
         );
-      case 'ROLE_VENDOR_USER':
+      case 'VENDOR_USER':
         return (
           <span className="px-2 py-0.5 text-[10px] font-semibold bg-cyan-950 text-cyan-400 border border-cyan-800 rounded-full">
             Vendor Operator
           </span>
         );
-      case 'ROLE_CUSTOMER':
+      case 'CUSTOMER':
         return (
           <span className="px-2 py-0.5 text-[10px] font-semibold bg-blue-950 text-blue-400 border border-blue-800 rounded-full">
             Customer
@@ -100,7 +100,7 @@ export const UserGovernancePage: React.FC = () => {
         </div>
       )}
       <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 p-1.5 rounded-xl w-fit">
-        {['ALL', 'ROLE_ADMIN', 'ROLE_VENDOR_ADMIN', 'ROLE_VENDOR_USER', 'ROLE_CUSTOMER'].map((r) => (
+        {['ALL', 'ADMIN', 'VENDOR_ADMIN', 'VENDOR_USER', 'CUSTOMER'].map((r) => (
           <button
             key={r}
             onClick={() => setFilterRole(r)}
@@ -110,7 +110,7 @@ export const UserGovernancePage: React.FC = () => {
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            {r === 'ALL' ? 'All Roles' : r.replace('ROLE_', '').replace('_', ' ')}
+            {r === 'ALL' ? 'All Roles' : r.replace('_', ' ')}
           </button>
         ))}
       </div>

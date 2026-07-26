@@ -9,7 +9,7 @@ import com.evcharging.billing.application.service.BillingApplicationService;
 import com.evcharging.session.application.events.SessionCompletedEvent;
 
 /** Listener that captures SessionCompletedEvent to trigger invoicing. */
-@Component
+@Component("billingSessionCompletedEventListener")
 public class SessionCompletedEventListener {
 
   private final BillingApplicationService billingApplicationService;

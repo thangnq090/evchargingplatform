@@ -37,8 +37,8 @@
 - [ ] **004-004**: Vendor income insights
 
 #### unit: 005-payment-processing
-- [ ] **005-001**: PaymentProvider interface and MockPayment adapter
-- [ ] **005-002**: Lightweight payment orchestrator workflow
+- [x] **005-001**: PaymentProvider interface and MockPayment adapter
+- [x] **005-002**: Lightweight payment orchestrator workflow
 - [ ] **005-003**: Idempotency and retry with backoff
 - [ ] **005-004**: Compensation actions on failure
 

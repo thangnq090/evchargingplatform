@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { GlobalFtsSearchBar } from "../../features/admin/components/GlobalFtsSearchBar";
 import { useAuth } from "../../features/auth/hooks/useAuth";
-import { Zap, LayoutDashboard, Building2, Users, Shield, LogOut } from "lucide-react";
+import { Zap, LayoutDashboard, Building2, Users, Shield, LogOut, Activity } from "lucide-react";
 
 export function Layout() {
   const location = useLocation();
@@ -17,6 +17,7 @@ export function Layout() {
     { label: "Admin Overview", path: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Vendor Management", path: "/admin/vendors", icon: Building2 },
     { label: "Vendor Portal", path: "/vendor/portal", icon: Zap },
+    { label: "Vendor Operations", path: "/vendor/operations", icon: Activity },
     { label: "User Governance", path: "/admin/users", icon: Users },
   ];
 

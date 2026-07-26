@@ -60,17 +60,18 @@ public class StationRepositoryAdapter implements StationRepository {
 
     List<StationJpaEntity> page;
     if (vendorId != null) {
-      page = status != null
-          ? jpa.findByVendorIdAndStatusPaginated(
-              vendorId, status.name(), cursorCreatedAt, PageRequest.of(0, clamped + 1))
-          : jpa.findByVendorIdPaginated(
-              vendorId, cursorCreatedAt, PageRequest.of(0, clamped + 1));
+      page =
+          status != null
+              ? jpa.findByVendorIdAndStatusPaginated(
+                  vendorId, status.name(), cursorCreatedAt, PageRequest.of(0, clamped + 1))
+              : jpa.findByVendorIdPaginated(
+                  vendorId, cursorCreatedAt, PageRequest.of(0, clamped + 1));
     } else {
-      page = status != null
-          ? jpa.findAllByStatusPaginated(
-              status.name(), cursorCreatedAt, PageRequest.of(0, clamped + 1))
-          : jpa.findAllPaginated(
-              cursorCreatedAt, PageRequest.of(0, clamped + 1));
+      page =
+          status != null
+              ? jpa.findAllByStatusPaginated(
+                  status.name(), cursorCreatedAt, PageRequest.of(0, clamped + 1))
+              : jpa.findAllPaginated(cursorCreatedAt, PageRequest.of(0, clamped + 1));
     }
 
     List<Station> items = page.stream().map(StationJpaEntity::toDomain).toList();

@@ -21,9 +21,15 @@ import com.evcharging.station.application.dto.StationResponse;
 import com.evcharging.station.application.dto.UpdateStationRequest;
 import com.evcharging.station.application.service.StationApplicationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.core.publisher.Mono;
 
 /** REST controller for Station management. */
+@Tag(
+    name = "Station & Charging Location Management",
+    description =
+        "Endpoints for managing EV charging locations, EVSEs, connectors, and operational statuses")
 @RestController
 @RequestMapping("/api/v1/stations")
 public class StationController {
@@ -34,6 +40,10 @@ public class StationController {
     this.service = service;
   }
 
+  @Operation(
+      summary = "Create Charging Station",
+      description =
+          "Creates a new charging station site with EVSEs and connectors under the authenticated vendor's account.")
   @PostMapping
   @PreAuthorize("hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<StationResponse>>> createStation(
@@ -50,6 +60,10 @@ public class StationController {
                     .body(ApiResponse.ok(response)));
   }
 
+  @Operation(
+      summary = "Get Station Details",
+      description =
+          "Retrieves full details of a specific charging station including EVSE and connector configurations.")
   @GetMapping("/{stationId}")
   @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<StationResponse>>> getStation(
@@ -58,6 +72,10 @@ public class StationController {
         .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
   }
 
+  @Operation(
+      summary = "List Charging Stations (Paginated)",
+      description =
+          "Retrieves a paginated list of charging stations, filtered by status and vendor ID.")
   @GetMapping
   @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<PaginatedList<StationResponse>>>> listStations(
@@ -78,6 +96,10 @@ public class StationController {
         .map(stations -> ResponseEntity.ok(ApiResponse.ok(stations)));
   }
 
+  @Operation(
+      summary = "Update Station Details",
+      description =
+          "Updates station metadata (name, address, location coordinates) for an existing charging station.")
   @PatchMapping("/{stationId}")
   @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<StationResponse>>> updateStation(
@@ -87,6 +109,10 @@ public class StationController {
         .map(response -> ResponseEntity.ok(ApiResponse.ok(response)));
   }
 
+  @Operation(
+      summary = "Update Station Operational Status",
+      description =
+          "Changes operational status of a charging station (e.g. AVAILABLE, OCCUPIED, UNKOWN/OFFLINE, OUT_OF_SERVICE).")
   @PutMapping("/{stationId}/status")
   @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<StationResponse>>> changeStatus(

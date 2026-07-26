@@ -10,9 +10,15 @@ import com.evcharging.shared.api.ApiResponse;
 import com.evcharging.shared.kernel.VendorId;
 import com.evcharging.station.application.service.MarkupApplicationService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.core.publisher.Mono;
 
 /** REST controller for Admin markup configuration. */
+@Tag(
+    name = "Admin Station Markup Management",
+    description = "Endpoints for platform administrators to configure vendor percentage markups")
 @RestController
 @RequestMapping("/api/v1/admin/vendors")
 public class AdminMarkupController {
@@ -24,6 +30,10 @@ public class AdminMarkupController {
   }
 
   /** Sets the markup percentage for a vendor (admin only). */
+  @Operation(
+      summary = "Set Vendor Pricing Markup",
+      description =
+          "Configures vendor markup in basis points (e.g. 500 basis points = 5.00%). Requires ROLE_ADMIN.")
   @PutMapping("/{vendorId}/markup")
   @PreAuthorize("hasRole('ADMIN')")
   public Mono<ResponseEntity<ApiResponse<MarkupResponse>>> setMarkup(
@@ -43,6 +53,9 @@ public class AdminMarkupController {
   }
 
   /** Gets the markup percentage for a vendor. */
+  @Operation(
+      summary = "Get Vendor Pricing Markup",
+      description = "Retrieves the current configured pricing markup in basis points for a vendor.")
   @GetMapping("/{vendorId}/markup")
   @PreAuthorize("@vendorSecurity.checkAccess(#vendorId)")
   public Mono<ResponseEntity<ApiResponse<MarkupResponse>>> getMarkup(@PathVariable UUID vendorId) {
@@ -53,8 +66,14 @@ public class AdminMarkupController {
   }
 
   /** Request to set vendor markup. */
-  public record SetMarkupRequest(int markupBasisPoints) {}
+  @Schema(description = "Request body to configure vendor markup")
+  public record SetMarkupRequest(
+      @Schema(description = "Markup percentage in basis points (100 bp = 1%)", example = "500")
+          int markupBasisPoints) {}
 
   /** Response containing markup basis points. */
-  public record MarkupResponse(int markupBasisPoints) {}
+  @Schema(description = "Response payload containing vendor markup basis points")
+  public record MarkupResponse(
+      @Schema(description = "Configured markup percentage in basis points", example = "500")
+          int markupBasisPoints) {}
 }

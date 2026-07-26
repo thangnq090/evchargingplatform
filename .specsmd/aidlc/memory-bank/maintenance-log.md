@@ -18,3 +18,26 @@
 | 010-device-gateway/unit-brief.md | draft | stories-defined | Has planned bolt with stories |
 
 ---
+
+## 2026-07-25T17:00:00Z - Status Sync
+
+**Triggered by**: analyze-context integrity check
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| 000-project-bootstrap/unit-brief.md | draft | complete | Bolt 000-project-bootstrap-1 completed |
+
+---
+
+## 2026-07-25T17:30:00Z - Status Sync
+
+**Triggered by**: analyze-context integrity check
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| 004-billing-pricing/unit-brief.md | stories-defined | in-progress | Bolt 006-billing-pricing-1 in-progress |
+| 005-payment-processing/unit-brief.md | stories-defined | complete | Bolt 007-payment-processing-1 completed |
+| 006-vehicle-management/unit-brief.md | stories-defined | complete | Bolt 008-vehicle-management-1 completed |
+| 007-admin-portal/unit-brief.md | stories-defined | complete | Bolt 009-admin-portal-1 completed |
+
+---

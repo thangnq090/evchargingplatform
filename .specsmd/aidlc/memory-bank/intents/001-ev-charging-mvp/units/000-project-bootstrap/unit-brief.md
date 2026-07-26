@@ -2,9 +2,9 @@
 unit: 000-project-bootstrap
 intent: 001-ev-charging-mvp
 phase: inception
-status: draft
+status: complete
 created: "2026-07-24T15:00:00Z"
-updated: "2026-07-24T15:00:00Z"
+updated: "2026-07-25T16:00:00Z"
 ---
 
 # Unit Brief: Project Bootstrap & Scaffolding

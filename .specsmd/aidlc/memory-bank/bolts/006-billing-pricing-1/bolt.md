@@ -3,14 +3,14 @@ id: 006-billing-pricing-1
 unit: 004-billing-pricing
 intent: 001-ev-charging-mvp
 type: ddd-construction-bolt
-status: in-progress
+status: complete
 stories:
   - 004-001-cost-calculation
   - 004-002-income-reporting
 created: "2026-07-24T15:00:00Z"
 started: "2026-07-26T03:55:00+12:00"
-completed: null
-current_stage: implement
+completed: "2026-07-27T11:47:30+12:00"
+current_stage: test
 stages_completed:
   - name: model
     completed: "2026-07-26T03:54:00+12:00"
@@ -18,6 +18,12 @@ stages_completed:
   - name: design
     completed: "2026-07-26T03:55:00+12:00"
     artifact: ddd-02-technical-design.md
+  - name: implement
+    completed: "2026-07-26T04:00:00+12:00"
+    artifact: src/
+  - name: test
+    completed: "2026-07-27T11:47:30+12:00"
+    artifact: ddd-03-test-report.md
 
 requires_bolts:
   - 005-session-management-1
@@ -48,10 +54,11 @@ Cost calculation with marked-up rates, invoice generation, and income reporting 
 **Type**: DDD Construction Bolt
 
 ## Stages
-- [ ] **1. Model**: Pending — Tariff, Invoice, BillingAccount
-- [ ] **2. Design**: Pending — Cost calculation, event consumption
-- [ ] **3. Implement**: Pending — Source code
-- [ ] **4. Test**: Pending — Test report
+- [x] **1. Model**: Completed — Tariff, Invoice, BillingAccount
+- [x] **2. Design**: Completed — Cost calculation, event consumption
+- [x] **3. Implement**: Completed — Source code
+- [x] **4. Test**: Completed — Test report
+
 
 ## Dependencies
 

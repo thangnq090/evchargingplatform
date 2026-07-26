@@ -67,7 +67,12 @@ public class GatewaySecurityConfig {
                     // Public endpoints
                     .pathMatchers("/actuator/health", "/actuator/info", "/actuator/prometheus")
                     .permitAll()
-                    .pathMatchers("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                    .pathMatchers(
+                        "/api-docs/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui/**",
+                        "/swagger-ui.html",
+                        "/webjars/**")
                     .permitAll()
                     .pathMatchers("/ocpp/**")
                     .permitAll() // OCPP handled by device-gateway module

@@ -23,8 +23,8 @@ public interface StationRepository {
   List<Station> findByVendorId(UUID vendorId);
 
   /**
-   * Cursor-paginated station list. When vendorId is null returns all stations
-   * (admin view), otherwise filters by vendor.
+   * Cursor-paginated station list. When vendorId is null returns all stations (admin view),
+   * otherwise filters by vendor.
    */
   PaginatedList<Station> findByVendorId(
       UUID vendorId, StationStatus status, int limit, UUID cursor);

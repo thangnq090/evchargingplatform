@@ -35,20 +35,27 @@ export interface BackendPaginatedList<T> {
 }
 
 export interface CreateStationBackendPayload {
-  stationCode: string;
   name: string;
   location: {
-    address: string;
     latitude: number;
     longitude: number;
   };
   connectors: Array<{
-    connectorId: number;
     type: string;
     maxPowerKw: number;
   }>;
   groupLabel?: string;
-  basePriceTenthsOfCentsPerKwh: number;
+  unitPriceTenthCents: number;
+}
+
+export interface UpdateStationBackendPayload {
+  name?: string;
+  groupLabel?: string;
+  unitPriceTenthCents?: number;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export interface AddVendorUserBackendPayload {
@@ -84,7 +91,7 @@ export const vendorAdminApi = {
     return apiClient.post("/stations", payload);
   },
 
-  updateStation: async (stationId: string, payload: Partial<CreateStationBackendPayload>): Promise<BackendStationResponse> => {
+  updateStation: async (stationId: string, payload: UpdateStationBackendPayload): Promise<BackendStationResponse> => {
     return apiClient.patch(`/stations/${stationId}`, payload);
   },
 

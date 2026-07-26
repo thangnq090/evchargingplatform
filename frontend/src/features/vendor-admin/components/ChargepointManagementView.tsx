@@ -76,9 +76,8 @@ export const ChargepointManagementView: React.FC = () => {
         await vendorAdminApi.updateStation(editingCp.id, {
           name: editingCp.name,
           groupLabel: editingCp.groupLabel,
-          basePriceTenthsOfCentsPerKwh: Number(editingCp.basePriceTenthsOfCentsPerKwh) || 350,
+          unitPriceTenthCents: Number(editingCp.basePriceTenthsOfCentsPerKwh) || 350,
           location: {
-            address: editingCp.locationAddress || "Main Location",
             latitude: 37.7749,
             longitude: -122.4194,
           },
@@ -87,20 +86,17 @@ export const ChargepointManagementView: React.FC = () => {
       } else {
         // API Create station
         await vendorAdminApi.createStation({
-          stationCode: editingCp.stationCode,
           name: editingCp.name,
           location: {
-            address: editingCp.locationAddress || "Main Location",
             latitude: 37.7749,
             longitude: -122.4194,
           },
-          connectors: Array.from({ length: Number(editingCp.connectorsCount) || 2 }, (_, i) => ({
-            connectorId: i + 1,
+          connectors: Array.from({ length: Number(editingCp.connectorsCount) || 2 }, () => ({
             type: "CCS2",
             maxPowerKw: 150,
           })),
           groupLabel: editingCp.groupLabel || "General",
-          basePriceTenthsOfCentsPerKwh: Number(editingCp.basePriceTenthsOfCentsPerKwh) || 350,
+          unitPriceTenthCents: Number(editingCp.basePriceTenthsOfCentsPerKwh) || 350,
         });
         await fetchStations();
       }

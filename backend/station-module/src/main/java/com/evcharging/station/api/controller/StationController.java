@@ -79,7 +79,7 @@ public class StationController {
   }
 
   @PatchMapping("/{stationId}")
-  @PreAuthorize("hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<StationResponse>>> updateStation(
       @PathVariable UUID stationId, @Valid @RequestBody UpdateStationRequest request) {
 
@@ -88,7 +88,7 @@ public class StationController {
   }
 
   @PutMapping("/{stationId}/status")
-  @PreAuthorize("hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
   public Mono<ResponseEntity<ApiResponse<StationResponse>>> changeStatus(
       @PathVariable UUID stationId, @Valid @RequestBody ChangeStatusRequest request) {
 
@@ -97,7 +97,7 @@ public class StationController {
   }
 
   @DeleteMapping("/{stationId}")
-  @PreAuthorize("hasRole('VENDOR_ADMIN')")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN')")
   public Mono<ResponseEntity<Void>> deleteStation(@PathVariable UUID stationId) {
     return Mono.<Void>fromRunnable(() -> service.deleteStation(StationId.of(stationId)))
         .thenReturn(ResponseEntity.noContent().build());

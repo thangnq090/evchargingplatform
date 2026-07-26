@@ -49,6 +49,13 @@ class UserRepositoryAdapter implements UserRepository {
   }
 
   @Override
+  public java.util.List<User> findAll() {
+    return jpa.findAll().stream()
+        .map(UserDbEntity::toDomain)
+        .collect(java.util.stream.Collectors.toList());
+  }
+
+  @Override
   public java.util.List<User> findAllByVendorId(UUID vendorId) {
     return jpa.findByVendorId(vendorId).stream()
         .map(UserDbEntity::toDomain)

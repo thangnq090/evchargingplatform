@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.evcharging.shared.kernel.Location;
 import com.evcharging.shared.kernel.StationId;
+import com.evcharging.shared.pagination.PaginatedList;
 import com.evcharging.station.domain.model.Station;
 import com.evcharging.station.domain.model.StationStatus;
 
@@ -15,14 +16,15 @@ public interface StationRepository {
   /** Saves a station. */
   Station save(Station station);
 
-  /** Finds a station by ID. */
+  /** Finds a station by ID (non-deleted only). */
   Optional<Station> findById(StationId stationId);
 
   /** Finds all stations for a vendor (non-deleted only). */
   List<Station> findByVendorId(UUID vendorId);
 
-  /** Finds stations for a vendor with a specific status. */
-  List<Station> findByVendorIdAndStatus(UUID vendorId, StationStatus status);
+  /** Cursor-paginated station list for a vendor, optionally filtered by status. */
+  PaginatedList<Station> findByVendorId(
+      UUID vendorId, StationStatus status, int limit, UUID cursor);
 
   /** Finds stations near a location within radius (kilometers). */
   List<Station> findNearby(Location location, double radiusKm);

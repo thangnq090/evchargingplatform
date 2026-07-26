@@ -4,9 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -15,7 +13,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.evcharging.billing.application.dto.IncomeReportResponse;
 import com.evcharging.billing.application.dto.InvoiceResponse;
 import com.evcharging.billing.application.dto.InvoiceResponse.LineItemDto;
 import com.evcharging.billing.domain.event.InvoiceGeneratedEvent;
@@ -36,7 +33,7 @@ import com.evcharging.station.StationApi.StationDetails;
 
 @Service
 @Transactional
-public class BillingApplicationService {
+public class BillingApplicationService implements com.evcharging.billing.BillingApi {
 
   private final InvoiceRepository invoiceRepository;
   private final BillingAccountRepository billingAccountRepository;
@@ -120,13 +117,10 @@ public class BillingApplicationService {
     return invoiceRepository.findBySessionId(sessionId).map(this::mapToResponse);
   }
 
-  /** Generates income report for administrators. */
-  @Transactional(readOnly = true)
-  public IncomeReportResponse getAdminIncomeReport(
+  @Override
+  public com.evcharging.billing.BillingApi.IncomeSummary getAdminIncomeReport(
       LocalDate startDate, LocalDate endDate, UUID vendorId) {
     Instant start = startDate.atStartOfDay(ZoneOffset.UTC).toInstant();
-    // Use start of the *next* day as the exclusive upper bound so the full endDate
-    // is covered regardless of sub-second precision or timezone drift.
     Instant end = endDate.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant();
 
     List<Invoice> invoices;
@@ -143,26 +137,8 @@ public class BillingApplicationService {
 
     int sessionCount = invoices.size();
 
-    // Group breakdowns by vendor
-    Map<UUID, List<Invoice>> grouped =
-        invoices.stream().collect(Collectors.groupingBy(Invoice::getVendorId));
-
-    List<IncomeReportResponse.VendorBreakdownDto> breakdowns = new ArrayList<>();
-    for (Map.Entry<UUID, List<Invoice>> entry : grouped.entrySet()) {
-      UUID vId = entry.getKey();
-      List<Invoice> vInvoices = entry.getValue();
-
-      String vendorName = vendorMarkupApi.getVendorName(vId).orElse("Vendor " + vId);
-      BigDecimal revenue =
-          vInvoices.stream()
-              .map(inv -> inv.getTotalAmount().getAmountExact())
-              .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-      breakdowns.add(
-          new IncomeReportResponse.VendorBreakdownDto(vId, vendorName, revenue, vInvoices.size()));
-    }
-
-    return new IncomeReportResponse(totalRevenue, sessionCount, breakdowns);
+    return new com.evcharging.billing.BillingApi.IncomeSummary(
+        totalRevenue.doubleValue(), sessionCount);
   }
 
   private InvoiceResponse mapToResponse(Invoice invoice) {

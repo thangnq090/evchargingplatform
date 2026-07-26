@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import com.evcharging.shared.api.ApiResponse;
 import com.evcharging.shared.kernel.StationId;
 import com.evcharging.shared.kernel.VendorId;
+import com.evcharging.shared.pagination.PaginatedList;
 import com.evcharging.station.application.dto.ChangeStatusRequest;
 import com.evcharging.station.application.dto.CreateStationRequest;
 import com.evcharging.station.application.dto.StationResponse;
@@ -59,7 +60,7 @@ public class StationController {
 
   @GetMapping
   @PreAuthorize("hasRole('ADMIN') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")
-  public Mono<ResponseEntity<ApiResponse<List<StationResponse>>>> listStations(
+  public Mono<ResponseEntity<ApiResponse<PaginatedList<StationResponse>>>> listStations(
       @RequestParam(required = false) String status,
       @RequestParam(defaultValue = "20") int limit,
       @RequestParam(required = false) String cursor) {

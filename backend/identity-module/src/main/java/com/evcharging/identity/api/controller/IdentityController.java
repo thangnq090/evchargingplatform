@@ -1,16 +1,19 @@
 package com.evcharging.identity.api.controller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.evcharging.identity.application.dto.AcceptInvitationRequest;
@@ -25,11 +28,16 @@ import com.evcharging.identity.application.dto.RefreshTokenRequest;
 import com.evcharging.identity.application.dto.RegisterAdminRequest;
 import com.evcharging.identity.application.dto.RegisterCustomerRequest;
 import com.evcharging.identity.application.dto.UserResponse;
+import com.evcharging.identity.application.dto.VendorListResponse;
 import com.evcharging.identity.application.service.AuthenticationApplicationService;
 import com.evcharging.identity.application.service.CredentialManagementApplicationService;
 import com.evcharging.identity.application.service.RefreshTokenApplicationService;
 import com.evcharging.identity.application.service.UserRegistrationApplicationService;
+import com.evcharging.identity.domain.model.Vendor;
+import com.evcharging.identity.domain.repository.UserRepository;
+import com.evcharging.identity.domain.repository.VendorRepository;
 import com.evcharging.shared.api.ApiResponse;
+import com.evcharging.shared.pagination.PaginatedList;
 import com.evcharging.shared.security.SecurityUtils;
 
 import reactor.core.publisher.Mono;
@@ -48,16 +56,22 @@ public class IdentityController {
   private final AuthenticationApplicationService authenticationService;
   private final CredentialManagementApplicationService credentialService;
   private final RefreshTokenApplicationService refreshTokenService;
+  private final VendorRepository vendorRepository;
+  private final UserRepository userRepository;
 
   IdentityController(
       UserRegistrationApplicationService registrationService,
       AuthenticationApplicationService authenticationService,
       CredentialManagementApplicationService credentialService,
-      RefreshTokenApplicationService refreshTokenService) {
+      RefreshTokenApplicationService refreshTokenService,
+      VendorRepository vendorRepository,
+      UserRepository userRepository) {
     this.registrationService = registrationService;
     this.authenticationService = authenticationService;
     this.credentialService = credentialService;
     this.refreshTokenService = refreshTokenService;
+    this.vendorRepository = vendorRepository;
+    this.userRepository = userRepository;
   }
 
   /**
@@ -141,6 +155,66 @@ public class IdentityController {
             res ->
                 ResponseEntity.created(URI.create("/api/v1/identity/vendors/" + res.vendorId()))
                     .body(ApiResponse.ok(res)));
+  }
+
+  /**
+   * List vendors with cursor-based pagination.
+   *
+   * <p>Requires {@code ROLE_ADMIN}. Returns vendors newest first.
+   *
+   * <p>{@code GET /api/v1/identity/vendors?limit=20&cursor=...}
+   */
+  @GetMapping("/vendors")
+  @PreAuthorize("hasRole('ADMIN')")
+  Mono<ResponseEntity<ApiResponse<PaginatedList<VendorListResponse.VendorSummary>>>> listVendors(
+      @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
+
+    UUID decoded = PaginatedList.decode(cursor);
+    return Mono.fromCallable(
+            () -> {
+              PaginatedList<Vendor> page = vendorRepository.findAll(limit, decoded);
+              List<VendorListResponse.VendorSummary> items =
+                  page.items().stream()
+                      .map(
+                          v ->
+                              new VendorListResponse.VendorSummary(
+                                  v.getId(),
+                                  v.getName(),
+                                  v.getStatus().name(),
+                                  v.getMarkupPercentage().getBasisPoints(),
+                                  v.getCreatedAt(),
+                                  v.getUpdatedAt()))
+                      .toList();
+              return new PaginatedList<>(items, page.pagination());
+            })
+        .map(list -> ResponseEntity.ok(ApiResponse.ok(list)));
+  }
+
+  /**
+   * List all users (admin only).
+   *
+   * <p>{@code GET /api/v1/identity/users}
+   */
+  @GetMapping("/users")
+  @PreAuthorize("hasRole('ADMIN')")
+  Mono<ResponseEntity<ApiResponse<List<UserResponse>>>> listUsers() {
+    return Mono.fromCallable(
+            () ->
+                userRepository.findAll().stream()
+                    .map(
+                        u ->
+                            new UserResponse(
+                                u.getId(),
+                                u.getName(),
+                                u.getEmail(),
+                                u.getPhone(),
+                                u.getRole(),
+                                u.getVendorId(),
+                                u.getAccountNumber(),
+                                u.getStatus(),
+                                u.getCreatedAt()))
+                    .toList())
+        .map(list -> ResponseEntity.ok(ApiResponse.ok(list)));
   }
 
   /**

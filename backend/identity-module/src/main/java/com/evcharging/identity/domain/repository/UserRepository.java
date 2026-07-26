@@ -18,6 +18,8 @@ public interface UserRepository {
 
   boolean existsByAccountNumber(String accountNumber);
 
+  java.util.List<User> findAll();
+
   java.util.List<User> findAllByVendorId(UUID vendorId);
 
   java.util.List<User> findAllByRole(com.evcharging.identity.domain.model.Role role);

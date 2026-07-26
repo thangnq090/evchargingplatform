@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.evcharging.billing.application.dto.IncomeReportResponse;
+import com.evcharging.billing.BillingApi.IncomeSummary;
 import com.evcharging.billing.application.dto.InvoiceResponse;
 import com.evcharging.billing.application.service.BillingApplicationService;
 import com.evcharging.shared.api.ApiResponse;
@@ -33,7 +33,7 @@ public class AdminBillingController {
    */
   @GetMapping("/api/v1/admin/billing/income")
   @PreAuthorize("hasRole('ADMIN')")
-  public Mono<ResponseEntity<ApiResponse<IncomeReportResponse>>> getAdminIncomeReport(
+  public Mono<ResponseEntity<ApiResponse<IncomeSummary>>> getAdminIncomeReport(
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
       @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
       @RequestParam(required = false) UUID vendorId) {

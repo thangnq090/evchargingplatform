@@ -1,14 +1,17 @@
 package com.evcharging.station.infrastructure.persistence;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.evcharging.shared.kernel.Location;
 import com.evcharging.shared.kernel.StationId;
+import com.evcharging.shared.pagination.PaginatedList;
 import com.evcharging.station.domain.model.Station;
 import com.evcharging.station.domain.model.StationStatus;
 import com.evcharging.station.domain.repository.StationRepository;
@@ -47,10 +50,26 @@ public class StationRepositoryAdapter implements StationRepository {
   }
 
   @Override
-  public List<Station> findByVendorIdAndStatus(UUID vendorId, StationStatus status) {
-    return jpa.findByVendorIdAndStatusNotDeleted(vendorId, status.name()).stream()
-        .map(StationJpaEntity::toDomain)
-        .toList();
+  public PaginatedList<Station> findByVendorId(
+      UUID vendorId, StationStatus status, int limit, UUID cursor) {
+    int clamped = Math.min(Math.max(limit, 1), 100);
+    Instant cursorCreatedAt =
+        cursor != null
+            ? jpa.findByIdIncludingDeleted(cursor).map(StationJpaEntity::getCreatedAt).orElse(null)
+            : null;
+
+    List<StationJpaEntity> page =
+        status != null
+            ? jpa.findByVendorIdAndStatusPaginated(
+                vendorId, status.name(), cursorCreatedAt, PageRequest.of(0, clamped + 1))
+            : jpa.findByVendorIdPaginated(
+                vendorId, cursorCreatedAt, PageRequest.of(0, clamped + 1));
+
+    List<Station> items = page.stream().map(StationJpaEntity::toDomain).toList();
+    boolean hasMore = items.size() > clamped;
+    List<Station> result = hasMore ? items.subList(0, clamped) : items;
+    UUID nextCursor = result.isEmpty() ? null : result.get(result.size() - 1).getId();
+    return PaginatedList.of(result, clamped, nextCursor, hasMore);
   }
 
   @Override

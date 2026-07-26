@@ -14,6 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import com.evcharging.shared.kernel.Location;
 import com.evcharging.shared.kernel.StationId;
 import com.evcharging.shared.kernel.VendorId;
+import com.evcharging.shared.pagination.PaginatedList;
 import com.evcharging.station.StationApi;
 import com.evcharging.station.application.dto.ChangeStatusRequest;
 import com.evcharging.station.application.dto.CreateStationRequest;
@@ -93,19 +94,21 @@ public class StationApplicationService implements StationApi {
     return toResponse(station);
   }
 
-  /** Lists stations for a vendor (paginated). */
+  /** Lists stations for a vendor (cursor-paginated). */
   @Transactional(readOnly = true)
-  public List<StationResponse> listStations(
+  public PaginatedList<StationResponse> listStations(
       VendorId vendorId, String status, int limit, String cursor) {
     StationStatus stationStatus =
         status != null ? StationStatus.valueOf(status.toUpperCase()) : null;
-    List<Station> stations =
-        stationStatus != null
-            ? stationRepository.findByVendorIdAndStatus(vendorId.getValue(), stationStatus)
-            : stationRepository.findByVendorId(vendorId.getValue());
+    UUID decodedCursor = PaginatedList.decode(cursor);
 
-    // TODO: implement cursor-based pagination
-    return stations.stream().limit(limit).map(this::toResponse).collect(Collectors.toList());
+    PaginatedList<Station> page =
+        stationRepository.findByVendorId(vendorId.getValue(), stationStatus, limit, decodedCursor);
+
+    List<StationResponse> items =
+        page.items().stream().map(this::toResponse).collect(Collectors.toList());
+
+    return new PaginatedList<>(items, page.pagination());
   }
 
   /** Updates a station. */

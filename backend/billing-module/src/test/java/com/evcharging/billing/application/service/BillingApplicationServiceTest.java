@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import com.evcharging.billing.application.dto.IncomeReportResponse;
 import com.evcharging.billing.domain.event.InvoiceGeneratedEvent;
 import com.evcharging.billing.domain.model.BillingAccount;
 import com.evcharging.billing.domain.model.Invoice;
@@ -195,17 +194,14 @@ class BillingApplicationServiceTest {
 
       given(invoiceRepository.findAllByCreatedAtBetween(any(), any()))
           .willReturn(List.of(inv1, inv2));
-      given(vendorMarkupApi.getVendorName(vendorId)).willReturn(Optional.of("ACME Corp"));
 
       // When
-      IncomeReportResponse report =
+      var report =
           service.getAdminIncomeReport(LocalDate.now().minusDays(7), LocalDate.now(), null);
 
       // Then
       assertThat(report.sessionCount()).isEqualTo(2);
       assertThat(report.totalRevenue()).isPositive();
-      assertThat(report.breakdowns()).hasSize(1);
-      assertThat(report.breakdowns().get(0).vendorName()).isEqualTo("ACME Corp");
     }
 
     @Test
@@ -226,10 +222,9 @@ class BillingApplicationServiceTest {
 
       given(invoiceRepository.findByVendorIdAndCreatedAtBetween(any(), any(), any()))
           .willReturn(List.of(inv));
-      given(vendorMarkupApi.getVendorName(vendorId)).willReturn(Optional.empty());
 
       // When
-      IncomeReportResponse report =
+      var report =
           service.getAdminIncomeReport(LocalDate.now().minusDays(30), LocalDate.now(), vendorId);
 
       // Then

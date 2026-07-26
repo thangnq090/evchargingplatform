@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.evcharging.identity.application.dto.AcceptInvitationRequest;
@@ -32,8 +33,10 @@ import com.evcharging.identity.application.service.AuthenticationApplicationServ
 import com.evcharging.identity.application.service.CredentialManagementApplicationService;
 import com.evcharging.identity.application.service.RefreshTokenApplicationService;
 import com.evcharging.identity.application.service.UserRegistrationApplicationService;
+import com.evcharging.identity.domain.model.Vendor;
 import com.evcharging.identity.domain.repository.VendorRepository;
 import com.evcharging.shared.api.ApiResponse;
+import com.evcharging.shared.pagination.PaginatedList;
 import com.evcharging.shared.security.SecurityUtils;
 
 import reactor.core.publisher.Mono;
@@ -151,28 +154,35 @@ public class IdentityController {
   }
 
   /**
-   * List all vendors.
+   * List vendors with cursor-based pagination.
    *
-   * <p>Requires {@code ROLE_ADMIN}. Returns a summary of all vendors including markup info.
+   * <p>Requires {@code ROLE_ADMIN}. Returns vendors newest first.
    *
-   * <p>{@code GET /api/v1/identity/vendors}
+   * <p>{@code GET /api/v1/identity/vendors?limit=20&cursor=...}
    */
   @GetMapping("/vendors")
   @PreAuthorize("hasRole('ADMIN')")
-  Mono<ResponseEntity<ApiResponse<List<VendorListResponse.VendorSummary>>>> listVendors() {
+  Mono<ResponseEntity<ApiResponse<PaginatedList<VendorListResponse.VendorSummary>>>> listVendors(
+      @RequestParam(defaultValue = "20") int limit, @RequestParam(required = false) String cursor) {
+
+    UUID decoded = PaginatedList.decode(cursor);
     return Mono.fromCallable(
-            () ->
-                vendorRepository.findAll().stream()
-                    .map(
-                        v ->
-                            new VendorListResponse.VendorSummary(
-                                v.getId(),
-                                v.getName(),
-                                v.getStatus().name(),
-                                v.getMarkupPercentage().getBasisPoints(),
-                                v.getCreatedAt(),
-                                v.getUpdatedAt()))
-                    .toList())
+            () -> {
+              PaginatedList<Vendor> page = vendorRepository.findAll(limit, decoded);
+              List<VendorListResponse.VendorSummary> items =
+                  page.items().stream()
+                      .map(
+                          v ->
+                              new VendorListResponse.VendorSummary(
+                                  v.getId(),
+                                  v.getName(),
+                                  v.getStatus().name(),
+                                  v.getMarkupPercentage().getBasisPoints(),
+                                  v.getCreatedAt(),
+                                  v.getUpdatedAt()))
+                      .toList();
+              return new PaginatedList<>(items, page.pagination());
+            })
         .map(list -> ResponseEntity.ok(ApiResponse.ok(list)));
   }
 

@@ -50,4 +50,25 @@ public interface SpringDataStationRepository extends JpaRepository<StationJpaEnt
 
   @Query("SELECT s FROM StationJpaEntity s WHERE s.id = :id")
   Optional<StationJpaEntity> findByIdIncludingDeleted(@Param("id") UUID id);
+
+  // --- Cursor-paginated queries ---
+
+  @Query(
+      "SELECT s FROM StationJpaEntity s WHERE s.vendorId = :vendorId AND s.deletedAt IS NULL"
+          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " ORDER BY s.createdAt DESC")
+  List<StationJpaEntity> findByVendorIdPaginated(
+      @Param("vendorId") UUID vendorId,
+      @Param("createdAt") java.time.Instant createdAt,
+      org.springframework.data.domain.Pageable pageable);
+
+  @Query(
+      "SELECT s FROM StationJpaEntity s WHERE s.vendorId = :vendorId AND s.status = :status AND s.deletedAt IS NULL"
+          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " ORDER BY s.createdAt DESC")
+  List<StationJpaEntity> findByVendorIdAndStatusPaginated(
+      @Param("vendorId") UUID vendorId,
+      @Param("status") String status,
+      @Param("createdAt") java.time.Instant createdAt,
+      org.springframework.data.domain.Pageable pageable);
 }

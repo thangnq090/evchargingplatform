@@ -20,13 +20,14 @@ interface AuthState {
 }
 
 const savedToken = localStorage.getItem("token");
-const savedUser = localStorage.getItem("user");
+const savedUserRaw = localStorage.getItem("user");
+const savedUser = (savedUserRaw && savedUserRaw !== "undefined") ? JSON.parse(savedUserRaw) : null;
 
 export const useAuth = create<AuthState>((set) => ({
   isAuthenticated: !!savedToken,
   isLoading: false,
   error: null,
-  user: savedUser ? JSON.parse(savedUser) : null,
+  user: savedUser,
   token: savedToken,
 
   login: async (email: string, password: string) => {
@@ -35,7 +36,9 @@ export const useAuth = create<AuthState>((set) => ({
       const res: LoginBackendResponse = await authApi.login({ email, password });
       localStorage.setItem("token", res.accessToken);
       localStorage.setItem("refreshToken", res.refreshToken);
-      localStorage.setItem("user", JSON.stringify(res.user));
+      if (res.user) {
+        localStorage.setItem("user", JSON.stringify(res.user));
+      }
 
       set({
         isAuthenticated: true,

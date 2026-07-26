@@ -22,7 +22,7 @@ export const AdminDashboardPage: React.FC = () => {
         ]);
         setIncome(inc);
         setMarkup(mk);
-        setVendors(vds);
+        setVendors(vds.items);
       } catch (err: any) {
         setError(err.message || 'Failed to load platform dashboard data from backend server.');
       }

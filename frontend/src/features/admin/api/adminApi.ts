@@ -9,9 +9,16 @@ import {
 } from '../types/admin.types';
 
 export const adminApi = {
-  // GET /api/v1/identity/vendors
-  async getVendors(): Promise<Vendor[]> {
-    return await apiClient.get('/identity/vendors');
+  // GET /api/v1/identity/vendors?limit=N&cursor=X
+  async getVendors(limit: number = 50, cursor?: string): Promise<{ items: Vendor[]; nextCursor?: string; hasMore: boolean }> {
+    const params: any = { limit };
+    if (cursor) params.cursor = cursor;
+    const res: any = await apiClient.get('/identity/vendors', { params });
+    return {
+      items: res.items || [],
+      nextCursor: res.pagination?.nextCursor,
+      hasMore: res.pagination?.hasMore || false,
+    };
   },
 
   // POST /api/v1/identity/vendors

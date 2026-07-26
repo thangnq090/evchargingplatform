@@ -34,6 +34,7 @@ import com.evcharging.identity.application.service.CredentialManagementApplicati
 import com.evcharging.identity.application.service.RefreshTokenApplicationService;
 import com.evcharging.identity.application.service.UserRegistrationApplicationService;
 import com.evcharging.identity.domain.model.Vendor;
+import com.evcharging.identity.domain.repository.UserRepository;
 import com.evcharging.identity.domain.repository.VendorRepository;
 import com.evcharging.shared.api.ApiResponse;
 import com.evcharging.shared.pagination.PaginatedList;
@@ -56,18 +57,21 @@ public class IdentityController {
   private final CredentialManagementApplicationService credentialService;
   private final RefreshTokenApplicationService refreshTokenService;
   private final VendorRepository vendorRepository;
+  private final UserRepository userRepository;
 
   IdentityController(
       UserRegistrationApplicationService registrationService,
       AuthenticationApplicationService authenticationService,
       CredentialManagementApplicationService credentialService,
       RefreshTokenApplicationService refreshTokenService,
-      VendorRepository vendorRepository) {
+      VendorRepository vendorRepository,
+      UserRepository userRepository) {
     this.registrationService = registrationService;
     this.authenticationService = authenticationService;
     this.credentialService = credentialService;
     this.refreshTokenService = refreshTokenService;
     this.vendorRepository = vendorRepository;
+    this.userRepository = userRepository;
   }
 
   /**
@@ -183,6 +187,33 @@ public class IdentityController {
                       .toList();
               return new PaginatedList<>(items, page.pagination());
             })
+        .map(list -> ResponseEntity.ok(ApiResponse.ok(list)));
+  }
+
+  /**
+   * List all users (admin only).
+   *
+   * <p>{@code GET /api/v1/identity/users}
+   */
+  @GetMapping("/users")
+  @PreAuthorize("hasRole('ADMIN')")
+  Mono<ResponseEntity<ApiResponse<List<UserResponse>>>> listUsers() {
+    return Mono.fromCallable(
+            () ->
+                userRepository.findAll().stream()
+                    .map(
+                        u ->
+                            new UserResponse(
+                                u.getId(),
+                                u.getName(),
+                                u.getEmail(),
+                                u.getPhone(),
+                                u.getRole(),
+                                u.getVendorId(),
+                                u.getAccountNumber(),
+                                u.getStatus(),
+                                u.getCreatedAt()))
+                    .toList())
         .map(list -> ResponseEntity.ok(ApiResponse.ok(list)));
   }
 

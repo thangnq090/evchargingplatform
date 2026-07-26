@@ -13,7 +13,7 @@ export const VendorManagementPage: React.FC = () => {
 
   useEffect(() => {
     setError(null);
-    adminApi.getVendors().then(setVendors).catch((err) => {
+    adminApi.getVendors().then((res) => setVendors(res.items)).catch((err) => {
       setError(err.message || 'Failed to fetch vendor list from backend');
     });
   }, []);

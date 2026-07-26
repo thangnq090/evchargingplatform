@@ -95,12 +95,12 @@ public class GatewayConfig {
         // Actuator endpoints (health, metrics, etc.) - no prefix strip
         .route("actuator", r -> r.path("/actuator/**").uri("lb://evcharging-app"))
 
-        // Swagger/OpenAPI
-        .route(
-            "api-docs",
-            r ->
-                r.path("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-                    .uri("lb://evcharging-app"))
+        // Swagger/OpenAPI — served directly by the app, not routed through gateway
+        // .route(
+        //     "api-docs",
+        //     r ->
+        //         r.path("/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+        //             .uri("lb://evcharging-app"))
         .build();
   }
 

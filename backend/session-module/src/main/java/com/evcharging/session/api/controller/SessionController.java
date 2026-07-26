@@ -30,8 +30,14 @@ import com.evcharging.session.domain.model.ChargingSession;
 import com.evcharging.shared.api.ApiResponse;
 import com.evcharging.shared.kernel.Money;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.core.publisher.Mono;
 
+@Tag(
+    name = "Charging Session Management",
+    description =
+        "Endpoints for starting, stopping, monitoring telemetry meter readings, and viewing historical EV charging sessions")
 @RestController
 @RequestMapping("/api/v1/sessions")
 public class SessionController {
@@ -42,6 +48,10 @@ public class SessionController {
     this.service = service;
   }
 
+  @Operation(
+      summary = "Start Charging Session",
+      description =
+          "Initiates a new EV charging session for a specified customer, vehicle, station, and connector.")
   @PostMapping
   @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
   public Mono<ResponseEntity<ApiResponse<SessionResponse>>> startSession(
@@ -59,6 +69,10 @@ public class SessionController {
                     .body(ApiResponse.ok(SessionResponse.from(session))));
   }
 
+  @Operation(
+      summary = "Stop Charging Session",
+      description =
+          "Stops an active charging session and computes total energy delivered and total cost.")
   @PostMapping("/{id}/stop")
   @PreAuthorize(
       "hasRole('CUSTOMER') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER') or hasRole('ADMIN')")
@@ -69,6 +83,10 @@ public class SessionController {
         .map(session -> ResponseEntity.ok(ApiResponse.ok(SessionResponse.from(session))));
   }
 
+  @Operation(
+      summary = "Record Session Meter Reading",
+      description =
+          "Accepts periodic meter telemetry readings (kWh delivered, power kW) from the charging station/gateway.")
   @PostMapping("/{id}/meter-readings")
   @PreAuthorize("permitAll()") // Permit from system/gateway without individual customer tokens
   public Mono<ResponseEntity<ApiResponse<Void>>> recordMeterReading(
@@ -80,6 +98,10 @@ public class SessionController {
         .then(Mono.just(ResponseEntity.accepted().body(ApiResponse.ok(null))));
   }
 
+  @Operation(
+      summary = "Get Customer Charging History",
+      description =
+          "Retrieves grouped monthly session history, total energy kWh, and total costs for a customer.")
   @GetMapping("/history")
   @PreAuthorize("hasRole('CUSTOMER') or hasRole('ADMIN')")
   public Mono<ResponseEntity<ApiResponse<MonthlyHistoryResponse>>> getCustomerHistory(

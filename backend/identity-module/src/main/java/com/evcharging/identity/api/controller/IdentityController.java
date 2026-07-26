@@ -40,6 +40,8 @@ import com.evcharging.shared.api.ApiResponse;
 import com.evcharging.shared.pagination.PaginatedList;
 import com.evcharging.shared.security.SecurityUtils;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.core.publisher.Mono;
 
 /**
@@ -48,6 +50,10 @@ import reactor.core.publisher.Mono;
  * <p>API versioning: {@code /api/v1/identity/}. All responses use the standard {@link ApiResponse}
  * envelope.
  */
+@Tag(
+    name = "Identity & Access Management",
+    description =
+        "Endpoints for user registration, authentication, vendor management, and credentials")
 @RestController
 @RequestMapping("/api/v1/identity")
 public class IdentityController {
@@ -81,6 +87,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/auth/register-admin}
    */
+  @Operation(
+      summary = "Register Platform Administrator",
+      description =
+          "Registers a new platform administrator account. Protected endpoint requiring ROLE_ADMIN privilege.")
   @PostMapping("/auth/register-admin")
   @PreAuthorize("hasRole('ADMIN')")
   Mono<ResponseEntity<ApiResponse<UserResponse>>> registerAdmin(
@@ -99,6 +109,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/auth/register-customer}
    */
+  @Operation(
+      summary = "Register Customer User",
+      description =
+          "Public registration endpoint for new EV drivers/customers to create an account.")
   @PostMapping("/auth/register-customer")
   Mono<ResponseEntity<ApiResponse<UserResponse>>> registerCustomer(
       @Valid @RequestBody RegisterCustomerRequest request) {
@@ -116,6 +130,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/auth/login}
    */
+  @Operation(
+      summary = "User Authentication Login",
+      description =
+          "Authenticates user credentials (email & password) and returns a Bearer JWT access token with refresh token.")
   @PostMapping("/auth/login")
   Mono<ResponseEntity<ApiResponse<LoginResponse>>> login(@Valid @RequestBody LoginRequest request) {
     return Mono.fromCallable(() -> authenticationService.login(request))
@@ -129,6 +147,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/auth/invitations/accept}
    */
+  @Operation(
+      summary = "Accept Vendor User Invitation",
+      description =
+          "Accepts a vendor invitation token to complete user account registration for a vendor portal.")
   @PostMapping("/auth/invitations/accept")
   Mono<ResponseEntity<ApiResponse<UserResponse>>> acceptInvitation(
       @Valid @RequestBody AcceptInvitationRequest request) {
@@ -146,6 +168,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/vendors}
    */
+  @Operation(
+      summary = "Create Charging Station Vendor",
+      description =
+          "Creates a new vendor entity and issues an invitation to the vendor administrator. Requires ROLE_ADMIN.")
   @PostMapping("/vendors")
   @PreAuthorize("hasRole('ADMIN')")
   Mono<ResponseEntity<ApiResponse<CreateVendorResponse>>> createVendor(
@@ -164,6 +190,10 @@ public class IdentityController {
    *
    * <p>{@code GET /api/v1/identity/vendors?limit=20&cursor=...}
    */
+  @Operation(
+      summary = "List Vendors (Paginated)",
+      description =
+          "Retrieves a paginated list of registered charging station vendors. Requires ROLE_ADMIN.")
   @GetMapping("/vendors")
   @PreAuthorize("hasRole('ADMIN')")
   Mono<ResponseEntity<ApiResponse<PaginatedList<VendorListResponse.VendorSummary>>>> listVendors(
@@ -195,6 +225,10 @@ public class IdentityController {
    *
    * <p>{@code GET /api/v1/identity/users}
    */
+  @Operation(
+      summary = "List All Registered Users",
+      description =
+          "Retrieves all registered platform users across all roles. Requires ROLE_ADMIN.")
   @GetMapping("/users")
   @PreAuthorize("hasRole('ADMIN')")
   Mono<ResponseEntity<ApiResponse<List<UserResponse>>>> listUsers() {
@@ -225,6 +259,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/vendors/{vendorId}/users}
    */
+  @Operation(
+      summary = "Add Vendor Team Member",
+      description =
+          "Allows a vendor admin to invite and add a team user to their vendor account. Requires ROLE_VENDOR_ADMIN.")
   @PostMapping("/vendors/{vendorId}/users")
   @PreAuthorize("hasRole('VENDOR_ADMIN')")
   Mono<ResponseEntity<ApiResponse<UserResponse>>> addVendorUser(
@@ -260,6 +298,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/users/{userId}/password/reset}
    */
+  @Operation(
+      summary = "Admin Reset User Password",
+      description =
+          "Resets password for a given user ID and forces password update on next login. Requires ROLE_ADMIN.")
   @PostMapping("/users/{userId}/password/reset")
   @PreAuthorize("hasRole('ADMIN')")
   Mono<ResponseEntity<ApiResponse<PasswordResetResponse>>> resetPassword(
@@ -278,6 +320,9 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/users/me/password}
    */
+  @Operation(
+      summary = "Change Current User Password",
+      description = "Allows an authenticated user to update their current password.")
   @PostMapping("/users/me/password")
   Mono<ResponseEntity<ApiResponse<Void>>> changePassword(
       @Valid @RequestBody ChangePasswordRequest request) {
@@ -301,6 +346,10 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/auth/refresh}
    */
+  @Operation(
+      summary = "Refresh Access Token",
+      description =
+          "Exchanges a valid refresh token for a new JWT access token and rotated refresh token.")
   @PostMapping("/auth/refresh")
   Mono<ResponseEntity<ApiResponse<LoginResponse>>> refreshToken(
       @Valid @RequestBody RefreshTokenRequest request) {
@@ -320,6 +369,9 @@ public class IdentityController {
    *
    * <p>{@code POST /api/v1/identity/auth/logout}
    */
+  @Operation(
+      summary = "User Logout",
+      description = "Revokes all active refresh tokens for the current authenticated user session.")
   @PostMapping("/auth/logout")
   Mono<ResponseEntity<Void>> logout() {
     return SecurityUtils.getReactiveUserId()

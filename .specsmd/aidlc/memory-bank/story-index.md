@@ -31,9 +31,9 @@
 - [ ] **003-004**: Vendor session report generation
 
 #### unit: 004-billing-pricing
-- [ ] **004-001**: Cost calculation with marked-up rates
-- [ ] **004-002**: Invoice generation
-- [ ] **004-003**: Admin income reporting
+- [x] **004-001**: Cost calculation with marked-up rates
+- [x] **004-002**: Invoice generation
+- [x] **004-003**: Admin income reporting
 - [ ] **004-004**: Vendor income insights
 
 #### unit: 005-payment-processing

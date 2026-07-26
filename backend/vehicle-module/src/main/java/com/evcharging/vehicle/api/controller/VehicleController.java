@@ -26,9 +26,15 @@ import com.evcharging.vehicle.api.dto.VehicleResponse;
 import com.evcharging.vehicle.application.service.VehicleApplicationService;
 import com.evcharging.vehicle.domain.model.Vehicle;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.core.publisher.Mono;
 
 /** Customer-facing REST controller for vehicle lifecycle operations. */
+@Tag(
+    name = "EV Vehicle Management",
+    description =
+        "Endpoints for EV drivers to register vehicles, manage RFID tags, and transfer ownership")
 @RestController
 @RequestMapping("/api/v1/vehicles")
 @PreAuthorize("hasRole('CUSTOMER')")
@@ -45,6 +51,10 @@ public class VehicleController {
    *
    * <p>POST /api/v1/vehicles → 201 Created
    */
+  @Operation(
+      summary = "Register EV Vehicle",
+      description =
+          "Registers a new electric vehicle under the authenticated customer account with optional RFID tag assignment.")
   @PostMapping
   public Mono<ResponseEntity<ApiResponse<VehicleResponse>>> registerVehicle(
       @Valid @RequestBody RegisterVehicleRequest request) {
@@ -64,6 +74,10 @@ public class VehicleController {
    *
    * <p>GET /api/v1/vehicles?page=0&limit=20 → 200 OK
    */
+  @Operation(
+      summary = "List Customer Vehicles",
+      description =
+          "Retrieves active registered vehicles owned by the currently authenticated driver.")
   @GetMapping
   public Mono<ResponseEntity<ApiResponse<List<VehicleResponse>>>> listMyVehicles(
       @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int limit) {
@@ -82,6 +96,9 @@ public class VehicleController {
    *
    * <p>GET /api/v1/vehicles/{vehicleId} → 200 OK | 403 | 404
    */
+  @Operation(
+      summary = "Get Vehicle Details",
+      description = "Retrieves vehicle details for a specific vehicle ID owned by the caller.")
   @GetMapping("/{vehicleId}")
   public Mono<ResponseEntity<ApiResponse<VehicleResponse>>> getVehicle(
       @PathVariable UUID vehicleId) {

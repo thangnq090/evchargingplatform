@@ -16,8 +16,14 @@ import com.evcharging.billing.application.dto.InvoiceResponse;
 import com.evcharging.billing.application.service.BillingApplicationService;
 import com.evcharging.shared.api.ApiResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import reactor.core.publisher.Mono;
 
+@Tag(
+    name = "Billing & Financial Reports",
+    description =
+        "Endpoints for financial income reports, session invoices, and line-item breakdowns")
 @RestController
 public class AdminBillingController {
 
@@ -31,6 +37,10 @@ public class AdminBillingController {
    * Admin: Generate income report filtered by date range and optionally by vendor. GET
    * /api/v1/admin/billing/income?startDate=...&endDate=...&vendorId=...
    */
+  @Operation(
+      summary = "Get Income Financial Report",
+      description =
+          "Generates a financial revenue report aggregated by date range and optional vendor filter. Requires ROLE_ADMIN.")
   @GetMapping("/api/v1/admin/billing/income")
   @PreAuthorize("hasRole('ADMIN')")
   public Mono<ResponseEntity<ApiResponse<IncomeSummary>>> getAdminIncomeReport(
@@ -47,6 +57,10 @@ public class AdminBillingController {
    * Retrieve invoice for a completed session (admin or session owner). GET
    * /api/v1/billing/invoices/session/{sessionId}
    */
+  @Operation(
+      summary = "Get Session Invoice Details",
+      description =
+          "Retrieves the billing invoice and line-item breakdown for a completed charging session.")
   @GetMapping("/api/v1/billing/invoices/session/{sessionId}")
   @PreAuthorize(
       "hasRole('ADMIN') or hasRole('CUSTOMER') or hasRole('VENDOR_ADMIN') or hasRole('VENDOR_USER')")

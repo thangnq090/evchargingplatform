@@ -1,12 +1,14 @@
 package com.evcharging.identity.api.controller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,10 +27,12 @@ import com.evcharging.identity.application.dto.RefreshTokenRequest;
 import com.evcharging.identity.application.dto.RegisterAdminRequest;
 import com.evcharging.identity.application.dto.RegisterCustomerRequest;
 import com.evcharging.identity.application.dto.UserResponse;
+import com.evcharging.identity.application.dto.VendorListResponse;
 import com.evcharging.identity.application.service.AuthenticationApplicationService;
 import com.evcharging.identity.application.service.CredentialManagementApplicationService;
 import com.evcharging.identity.application.service.RefreshTokenApplicationService;
 import com.evcharging.identity.application.service.UserRegistrationApplicationService;
+import com.evcharging.identity.domain.repository.VendorRepository;
 import com.evcharging.shared.api.ApiResponse;
 import com.evcharging.shared.security.SecurityUtils;
 
@@ -48,16 +52,19 @@ public class IdentityController {
   private final AuthenticationApplicationService authenticationService;
   private final CredentialManagementApplicationService credentialService;
   private final RefreshTokenApplicationService refreshTokenService;
+  private final VendorRepository vendorRepository;
 
   IdentityController(
       UserRegistrationApplicationService registrationService,
       AuthenticationApplicationService authenticationService,
       CredentialManagementApplicationService credentialService,
-      RefreshTokenApplicationService refreshTokenService) {
+      RefreshTokenApplicationService refreshTokenService,
+      VendorRepository vendorRepository) {
     this.registrationService = registrationService;
     this.authenticationService = authenticationService;
     this.credentialService = credentialService;
     this.refreshTokenService = refreshTokenService;
+    this.vendorRepository = vendorRepository;
   }
 
   /**
@@ -141,6 +148,32 @@ public class IdentityController {
             res ->
                 ResponseEntity.created(URI.create("/api/v1/identity/vendors/" + res.vendorId()))
                     .body(ApiResponse.ok(res)));
+  }
+
+  /**
+   * List all vendors.
+   *
+   * <p>Requires {@code ROLE_ADMIN}. Returns a summary of all vendors including markup info.
+   *
+   * <p>{@code GET /api/v1/identity/vendors}
+   */
+  @GetMapping("/vendors")
+  @PreAuthorize("hasRole('ADMIN')")
+  Mono<ResponseEntity<ApiResponse<List<VendorListResponse.VendorSummary>>>> listVendors() {
+    return Mono.fromCallable(
+            () ->
+                vendorRepository.findAll().stream()
+                    .map(
+                        v ->
+                            new VendorListResponse.VendorSummary(
+                                v.getId(),
+                                v.getName(),
+                                v.getStatus().name(),
+                                v.getMarkupPercentage().getBasisPoints(),
+                                v.getCreatedAt(),
+                                v.getUpdatedAt()))
+                    .toList())
+        .map(list -> ResponseEntity.ok(ApiResponse.ok(list)));
   }
 
   /**

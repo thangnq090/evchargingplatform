@@ -1,5 +1,6 @@
 package com.evcharging.identity.infrastructure.persistence;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,6 +37,11 @@ class VendorRepositoryAdapter implements VendorRepository {
   @Override
   public Optional<Vendor> findByName(String name) {
     return jpa.findByName(name).map(VendorDbEntity::toDomain);
+  }
+
+  @Override
+  public List<Vendor> findAll() {
+    return jpa.findAll().stream().map(VendorDbEntity::toDomain).toList();
   }
 
   @Override

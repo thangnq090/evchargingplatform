@@ -1,5 +1,6 @@
 package com.evcharging.identity.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +14,8 @@ public interface VendorRepository {
   Optional<Vendor> findById(UUID id);
 
   Optional<Vendor> findByName(String name);
+
+  List<Vendor> findAll();
 
   boolean existsByName(String name);
 }

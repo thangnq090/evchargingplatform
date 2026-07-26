@@ -3,15 +3,19 @@ id: 007-payment-processing-1
 unit: 005-payment-processing
 intent: 001-ev-charging-mvp
 type: ddd-construction-bolt
-status: planned
+status: completed
 stories:
   - 005-001-payment-provider-interface
   - 005-002-payment-orchestrator
 created: "2026-07-24T15:00:00Z"
-started: null
-completed: null
-current_stage: null
-stages_completed: []
+started: "2026-07-26T12:15:40Z"
+completed: "2026-07-26T12:36:25Z"
+current_stage: completed
+stages_completed:
+  - 1-model
+  - 2-design
+  - 3-implement
+  - 4-test
 
 requires_bolts:
   - 006-billing-pricing-1
@@ -41,10 +45,10 @@ PaymentProvider interface with MockPayment adapter and lightweight payment orche
 **Type**: DDD Construction Bolt
 
 ## Stages
-- [ ] **1. Model**: Pending — Payment, PaymentAttempt, PaymentMethod
-- [ ] **2. Design**: Pending — Orchestrator workflow, compensations
-- [ ] **3. Implement**: Pending — Source code
-- [ ] **4. Test**: Pending — Test report
+- [x] **1. Model**: Completed — Payment, PaymentAttempt, PaymentMethod, VehicleId, ChargePointId
+- [x] **2. Design**: Completed — Orchestrator workflow, compensations
+- [x] **3. Implement**: Completed — Source code
+- [x] **4. Test**: Completed — Test report
 
 ## Dependencies
 

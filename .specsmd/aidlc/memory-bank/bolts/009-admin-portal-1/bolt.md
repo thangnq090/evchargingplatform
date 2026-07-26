@@ -3,14 +3,23 @@ id: 009-admin-portal-1
 unit: 007-admin-portal
 intent: 001-ev-charging-mvp
 type: simple-construction-bolt
-status: planned
+status: completed
 stories:
   - 007-001-admin-dashboard
 created: "2026-07-24T15:00:00Z"
-started: null
-completed: null
-current_stage: null
-stages_completed: []
+started: "2026-07-26T13:36:00Z"
+completed: "2026-07-26T13:43:00Z"
+current_stage: test
+stages_completed:
+  - name: plan
+    completed: "2026-07-26T13:36:00Z"
+    artifact: implementation-plan.md
+  - name: implement
+    completed: "2026-07-26T13:39:00Z"
+    artifact: implementation-walkthrough.md
+  - name: test
+    completed: "2026-07-26T13:43:00Z"
+    artifact: test-walkthrough.md
 
 requires_bolts:
   - 003-identity-service-3

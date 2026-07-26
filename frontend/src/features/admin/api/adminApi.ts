@@ -24,16 +24,14 @@ export const adminApi = {
   // POST /api/v1/identity/vendors
   async onboardVendor(payload: OnboardVendorPayload): Promise<Vendor> {
     const res: any = await apiClient.post('/identity/vendors', {
-      name: payload.name,
-      businessRegistrationNumber: payload.businessRegistrationNumber,
-      contactEmail: payload.contactEmail,
+      vendorName: payload.name,
+      adminName: payload.adminFullName,
       adminEmail: payload.adminEmail,
-      adminFullName: payload.adminFullName,
     });
     return {
       id: res.vendorId || `v-${Date.now()}`,
       name: payload.name,
-      businessRegistrationNumber: payload.businessRegistrationNumber,
+      businessRegistrationNumber: payload.businessRegistrationNumber || '',
       contactEmail: payload.contactEmail,
       status: 'ACTIVE',
       chargepointCount: 0,

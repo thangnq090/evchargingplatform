@@ -63,12 +63,12 @@ info "Superadmin JWT obtained."
 # -------------------------------------------------------
 echo ">>> STEP 2: Register & Login Customer User"
 CUST_EMAIL="customer-search-test-${RANDOM}@evcharging.test"
-REG_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/v1/identity/customers/register" \
+REG_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "$BASE_URL/api/v1/identity/auth/register-customer" \
   -H "Content-Type: application/json" \
   -d '{
     "email": "'"$CUST_EMAIL"'",
     "password": "CustomerPass1!",
-    "fullName": "Search Test Customer",
+    "name": "Search Test Customer",
     "phone": "+1555987654"
   }')
 REG_BODY=$(echo "$REG_RESPONSE" | sed '$d')

@@ -18,7 +18,7 @@ The implementation extends `session-module` with full-text search capabilities a
 
 ### Completed Work
 
-- [x] `backend/session-module/src/main/resources/db/migration/session-module/V202__add_session_search_indexes.sql` - Enables pg_trgm extension and adds trigram search index on error codes.
+- [x] `backend/session-module/src/main/resources/db/migration/session-module/V502__add_session_search_indexes.sql` - Enables pg_trgm extension and adds trigram search index on error codes.
 - [x] `backend/session-module/src/main/java/com/evcharging/session/api/dto/SessionSearchResponse.java` - DTO containing session search details, customer account number, vehicle registration plate, and error code.
 - [x] `backend/session-module/src/main/java/com/evcharging/session/infrastructure/persistence/SpringDataChargingSessionRepository.java` - Added native SQL search query and projection interface joining charging sessions, vehicles, and customer users.
 - [x] `backend/session-module/src/main/java/com/evcharging/session/application/service/SessionApplicationService.java` - Added transactional search service method mapping search projections to response DTOs.

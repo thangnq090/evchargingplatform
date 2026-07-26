@@ -55,7 +55,7 @@ public interface SpringDataStationRepository extends JpaRepository<StationJpaEnt
 
   @Query(
       "SELECT s FROM StationJpaEntity s WHERE s.vendorId = :vendorId AND s.deletedAt IS NULL"
-          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " AND (cast(:createdAt as java.time.Instant) IS NULL OR s.createdAt < :createdAt)"
           + " ORDER BY s.createdAt DESC")
   List<StationJpaEntity> findByVendorIdPaginated(
       @Param("vendorId") UUID vendorId,
@@ -64,7 +64,7 @@ public interface SpringDataStationRepository extends JpaRepository<StationJpaEnt
 
   @Query(
       "SELECT s FROM StationJpaEntity s WHERE s.vendorId = :vendorId AND s.status = :status AND s.deletedAt IS NULL"
-          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " AND (cast(:createdAt as java.time.Instant) IS NULL OR s.createdAt < :createdAt)"
           + " ORDER BY s.createdAt DESC")
   List<StationJpaEntity> findByVendorIdAndStatusPaginated(
       @Param("vendorId") UUID vendorId,
@@ -76,7 +76,7 @@ public interface SpringDataStationRepository extends JpaRepository<StationJpaEnt
 
   @Query(
       "SELECT s FROM StationJpaEntity s WHERE s.deletedAt IS NULL"
-          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " AND (cast(:createdAt as java.time.Instant) IS NULL OR s.createdAt < :createdAt)"
           + " ORDER BY s.createdAt DESC")
   List<StationJpaEntity> findAllPaginated(
       @Param("createdAt") java.time.Instant createdAt,
@@ -84,7 +84,7 @@ public interface SpringDataStationRepository extends JpaRepository<StationJpaEnt
 
   @Query(
       "SELECT s FROM StationJpaEntity s WHERE s.status = :status AND s.deletedAt IS NULL"
-          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " AND (cast(:createdAt as java.time.Instant) IS NULL OR s.createdAt < :createdAt)"
           + " ORDER BY s.createdAt DESC")
   List<StationJpaEntity> findAllByStatusPaginated(
       @Param("status") String status,

@@ -22,7 +22,10 @@ public interface StationRepository {
   /** Finds all stations for a vendor (non-deleted only). */
   List<Station> findByVendorId(UUID vendorId);
 
-  /** Cursor-paginated station list for a vendor, optionally filtered by status. */
+  /**
+   * Cursor-paginated station list. When vendorId is null returns all stations
+   * (admin view), otherwise filters by vendor.
+   */
   PaginatedList<Station> findByVendorId(
       UUID vendorId, StationStatus status, int limit, UUID cursor);
 

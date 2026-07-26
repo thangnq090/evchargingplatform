@@ -71,4 +71,23 @@ public interface SpringDataStationRepository extends JpaRepository<StationJpaEnt
       @Param("status") String status,
       @Param("createdAt") java.time.Instant createdAt,
       org.springframework.data.domain.Pageable pageable);
+
+  // --- Admin all-stations paginated queries ---
+
+  @Query(
+      "SELECT s FROM StationJpaEntity s WHERE s.deletedAt IS NULL"
+          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " ORDER BY s.createdAt DESC")
+  List<StationJpaEntity> findAllPaginated(
+      @Param("createdAt") java.time.Instant createdAt,
+      org.springframework.data.domain.Pageable pageable);
+
+  @Query(
+      "SELECT s FROM StationJpaEntity s WHERE s.status = :status AND s.deletedAt IS NULL"
+          + " AND (:createdAt IS NULL OR s.createdAt < :createdAt)"
+          + " ORDER BY s.createdAt DESC")
+  List<StationJpaEntity> findAllByStatusPaginated(
+      @Param("status") String status,
+      @Param("createdAt") java.time.Instant createdAt,
+      org.springframework.data.domain.Pageable pageable);
 }

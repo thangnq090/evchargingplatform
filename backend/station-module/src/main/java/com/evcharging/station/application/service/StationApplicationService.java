@@ -98,15 +98,13 @@ public class StationApplicationService implements StationApi {
   @Transactional(readOnly = true)
   public PaginatedList<StationResponse> listStations(
       VendorId vendorId, String status, int limit, String cursor) {
-    if (vendorId == null) {
-      return PaginatedList.empty(limit);
-    }
     StationStatus stationStatus =
         status != null ? StationStatus.valueOf(status.toUpperCase()) : null;
     UUID decodedCursor = PaginatedList.decode(cursor);
 
+    UUID vid = vendorId != null ? vendorId.getValue() : null;
     PaginatedList<Station> page =
-        stationRepository.findByVendorId(vendorId.getValue(), stationStatus, limit, decodedCursor);
+        stationRepository.findByVendorId(vid, stationStatus, limit, decodedCursor);
 
     List<StationResponse> items =
         page.items().stream().map(this::toResponse).collect(Collectors.toList());

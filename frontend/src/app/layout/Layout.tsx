@@ -16,6 +16,7 @@ export function Layout() {
   const navItems = [
     { label: "Admin Overview", path: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Vendor Management", path: "/admin/vendors", icon: Building2 },
+    { label: "Vendor Portal", path: "/vendor/portal", icon: Zap },
     { label: "User Governance", path: "/admin/users", icon: Users },
   ];
 

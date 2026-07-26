@@ -5,6 +5,7 @@ import { ProtectedRoute } from "./app/routes/ProtectedRoute";
 import { AdminDashboardPage } from "./features/admin/pages/AdminDashboardPage";
 import { VendorManagementPage } from "./features/admin/pages/VendorManagementPage";
 import { UserGovernancePage } from "./features/admin/pages/UserGovernancePage";
+import { VendorAdminPage } from "./features/vendor-admin/pages/VendorAdminPage";
 
 export function App() {
   return (
@@ -20,6 +21,7 @@ export function App() {
         <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
         <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
         <Route path="/admin/vendors" element={<VendorManagementPage />} />
+        <Route path="/vendor/portal" element={<VendorAdminPage />} />
         <Route path="/admin/users" element={<UserGovernancePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />

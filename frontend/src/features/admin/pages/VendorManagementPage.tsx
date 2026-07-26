@@ -27,9 +27,9 @@ export const VendorManagementPage: React.FC = () => {
 
   const filtered = vendors.filter(
     (v) =>
-      v.name.toLowerCase().includes(search.toLowerCase()) ||
-      v.businessRegistrationNumber.toLowerCase().includes(search.toLowerCase()) ||
-      v.contactEmail.toLowerCase().includes(search.toLowerCase())
+      v.name?.toLowerCase().includes(search.toLowerCase()) ||
+      v.businessRegistrationNumber?.toLowerCase().includes(search.toLowerCase()) ||
+      v.contactEmail?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (

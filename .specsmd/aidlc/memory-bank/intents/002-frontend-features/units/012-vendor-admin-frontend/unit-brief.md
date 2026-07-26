@@ -2,9 +2,9 @@
 unit: 012-vendor-admin-frontend
 intent: 002-frontend-features
 phase: inception
-status: defined
-created: "2026-07-26T13:47:39Z"
-updated: "2026-07-26T13:52:30Z"
+status: complete
+created: '2026-07-26T13:47:39Z'
+updated: '2026-07-26T13:52:30Z'
 ---
 
 # Unit Brief: Vendor Admin Frontend (012-vendor-admin-frontend)

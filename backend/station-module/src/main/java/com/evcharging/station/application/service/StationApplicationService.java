@@ -98,6 +98,9 @@ public class StationApplicationService implements StationApi {
   @Transactional(readOnly = true)
   public PaginatedList<StationResponse> listStations(
       VendorId vendorId, String status, int limit, String cursor) {
+    if (vendorId == null) {
+      return PaginatedList.empty(limit);
+    }
     StationStatus stationStatus =
         status != null ? StationStatus.valueOf(status.toUpperCase()) : null;
     UUID decodedCursor = PaginatedList.decode(cursor);

@@ -140,7 +140,7 @@ const colors = {
 };
 
 // Memory bank paths (relative to project root)
-const MEMORY_BANK_DIR = 'memory-bank';
+const MEMORY_BANK_DIR = path.join('.specsmd', 'aidlc', 'memory-bank');
 const BOLTS_DIR = path.join(MEMORY_BANK_DIR, 'bolts');
 const INTENTS_DIR = path.join(MEMORY_BANK_DIR, 'intents');
 

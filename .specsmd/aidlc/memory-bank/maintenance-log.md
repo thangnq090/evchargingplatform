@@ -41,3 +41,24 @@
 | 007-admin-portal/unit-brief.md | stories-defined | complete | Bolt 009-admin-portal-1 completed |
 
 ---
+
+## 2026-07-25T18:00:00Z - Status Sync
+
+**Triggered by**: analyze-context integrity check
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| 004-billing-pricing/unit-brief.md | in-progress | complete | Bolt 006-billing-pricing-1 completed |
+
+---
+
+## 2026-07-27T08:00:00Z - Status Sync
+
+**Triggered by**: analyze-context integrity check (intent 002-frontend-features)
+
+| Artifact | Old Status | New Status | Reason |
+|----------|------------|------------|--------|
+| 013-vendor-user-frontend/unit-brief.md | defined | complete | Bolt 015-vendor-user-frontend-1 completed |
+| 014-customer-portal-frontend/unit-brief.md | defined | stories-defined | Bolt 016-customer-portal-frontend-1 planned with stories |
+
+---

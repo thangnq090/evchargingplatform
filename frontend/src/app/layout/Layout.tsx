@@ -13,13 +13,20 @@ export function Layout() {
     navigate("/login");
   };
 
-  const navItems = [
-    { label: "Admin Overview", path: "/admin/dashboard", icon: LayoutDashboard },
-    { label: "Vendor Management", path: "/admin/vendors", icon: Building2 },
-    { label: "Vendor Portal", path: "/vendor/portal", icon: Zap },
-    { label: "Vendor Operations", path: "/vendor/operations", icon: Activity },
-    { label: "User Governance", path: "/admin/users", icon: Users },
-  ];
+  const navItems = user?.role === "ROLE_CUSTOMER"
+    ? [
+        { label: "My Profile", path: "/customer/profile", icon: LayoutDashboard },
+        { label: "My Vehicles & RFID", path: "/customer/vehicles", icon: Zap },
+        { label: "Active Charging", path: "/customer/active-session", icon: Activity },
+        { label: "Session Receipts", path: "/customer/sessions", icon: Users },
+      ]
+    : [
+        { label: "Admin Overview", path: "/admin/dashboard", icon: LayoutDashboard },
+        { label: "Vendor Management", path: "/admin/vendors", icon: Building2 },
+        { label: "Vendor Portal", path: "/vendor/portal", icon: Zap },
+        { label: "Vendor Operations", path: "/vendor/operations", icon: Activity },
+        { label: "User Governance", path: "/admin/users", icon: Users },
+      ];
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col antialiased">

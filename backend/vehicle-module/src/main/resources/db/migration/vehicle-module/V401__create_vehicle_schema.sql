@@ -1,6 +1,8 @@
 -- V401__create_vehicle_schema.sql
 -- Creates the vehicle schema and tables for vehicle lifecycle management
 
+SET search_path TO public;
+
 CREATE SCHEMA IF NOT EXISTS vehicle;
 
 COMMENT ON SCHEMA vehicle IS 'Vehicle Management: registration, RFID, ownership tracking, de-listing';

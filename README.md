@@ -31,13 +31,13 @@ Before running the platform, ensure you have installed:
 Start the required database and cache containers using Docker Compose:
 
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres
 ```
 
 Verify that PostgreSQL (port `5432`) and Redis (port `6379`) are running:
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 ### 2. Run the Backend Application
@@ -47,12 +47,16 @@ Navigate to the `backend/` directory and compile the project:
 ```bash
 cd backend
 mvn clean install -DskipTests
+OR
+make install
 ```
 
 Run the composition root application (`evcharging-app`):
 
 ```bash
 mvn spring-boot:run -pl evcharging-app
+OR
+make run
 ```
 
 The application will initialize Flyway database migrations and start Tomcat on **port 8080**.

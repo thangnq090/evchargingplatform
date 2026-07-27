@@ -13,7 +13,16 @@ export function Login() {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/admin/dashboard");
+      const currentUser = useAuth.getState().user;
+      if (currentUser?.role === "ROLE_CUSTOMER") {
+        navigate("/customer/profile");
+      } else if (currentUser?.role === "ROLE_VENDOR_ADMIN") {
+        navigate("/vendor/portal");
+      } else if (currentUser?.role === "ROLE_VENDOR_USER") {
+        navigate("/vendor/operations");
+      } else {
+        navigate("/admin/dashboard");
+      }
     } catch {
       // Error handled by store state
     }
@@ -91,8 +100,14 @@ export function Login() {
           </button>
         </form>
 
-        <div className="text-center pt-2 border-t border-slate-800/80">
-          <span className="text-[11px] text-slate-500">
+        <div className="text-center pt-2 border-t border-slate-800/80 space-y-1">
+          <div className="text-xs text-slate-400">
+            EV Driver?{" "}
+            <a href="/register" className="text-cyan-400 font-semibold hover:underline">
+              Create Customer Account
+            </a>
+          </div>
+          <span className="block text-[11px] text-slate-500">
             Secured by OAuth 2.0 / JWT Modular Identity Service
           </span>
         </div>

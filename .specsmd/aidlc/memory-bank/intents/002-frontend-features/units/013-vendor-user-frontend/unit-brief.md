@@ -2,7 +2,7 @@
 unit: 013-vendor-user-frontend
 intent: 002-frontend-features
 phase: inception
-status: defined
+status: complete
 created: "2026-07-26T13:47:39Z"
 updated: "2026-07-26T13:52:30Z"
 ---

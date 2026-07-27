@@ -1,6 +1,8 @@
 -- V502__add_session_search_indexes.sql
 -- Enables pg_trgm and adds trigram / full-text search indexes for session search performance
 
+SET search_path TO public;
+
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE INDEX IF NOT EXISTS idx_sessions_error_code_trgm

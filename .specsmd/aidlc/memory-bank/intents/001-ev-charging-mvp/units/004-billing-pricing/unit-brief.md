@@ -2,9 +2,9 @@
 unit: 004-billing-pricing
 intent: 001-ev-charging-mvp
 phase: inception
-status: in-progress
+status: complete
 created: "2026-07-24T15:00:00Z"
-updated: "2026-07-25T17:00:00Z"
+updated: "2026-07-25T18:00:00Z"
 ---
 
 # Unit Brief: Pricing & Billing

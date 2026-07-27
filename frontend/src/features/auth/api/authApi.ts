@@ -34,4 +34,8 @@ export const authApi = {
       localStorage.removeItem('user');
     }
   },
+
+  async registerCustomer(payload: { name: string; email: string; password: string; phone?: string }): Promise<any> {
+    return await apiClient.post('/identity/auth/register-customer', payload);
+  },
 };

@@ -2,7 +2,7 @@ JAVA_HOME := /Library/Java/JavaVirtualMachines/temurin-21.jdk/Contents/Home
 export JAVA_HOME
 MAVEN := mvn
 
-.PHONY: help build test format check checkstyle coverage archunit ci clean
+.PHONY: help build test format check checkstyle coverage archunit ci clean run
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
@@ -36,3 +36,6 @@ ci: format check-format checkstyle test ## Full local CI (format + checks + test
 
 clean: ## Clean build artifacts
 	$(MAVEN) clean
+
+run: ## Run application
+	$(MAVEN) spring-boot:run -pl evcharging-app

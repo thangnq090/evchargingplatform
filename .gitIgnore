@@ -18,4 +18,4 @@ npm-debug.log*
 out
 .opencode
 
-*.docs
+*.docs~$Charging_Platform_Design_Decisions.docx

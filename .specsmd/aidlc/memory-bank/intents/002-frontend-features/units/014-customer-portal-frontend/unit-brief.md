@@ -2,7 +2,7 @@
 unit: 014-customer-portal-frontend
 intent: 002-frontend-features
 phase: inception
-status: defined
+status: stories-defined
 created: "2026-07-26T13:47:39Z"
 updated: "2026-07-26T13:52:30Z"
 ---

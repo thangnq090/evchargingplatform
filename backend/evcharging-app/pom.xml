@@ -184,13 +184,25 @@
                     </layers>
                 </configuration>
             </plugin>
-            <!-- Skip JaCoCo for composition root - config classes are tested indirectly via integration tests -->
+            <!-- JaCoCo: skip per-module instrumentation, but run aggregate report -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>aggregate-report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report-aggregate</goal>
+                        </goals>
+                        <configuration>
+                            <skip>false</skip>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

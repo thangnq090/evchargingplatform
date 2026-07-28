@@ -11,7 +11,7 @@ build: ## Compile without tests
 	$(MAVEN) clean compile -DskipTests
 
 install: ## Compile install local repo
-	$(MAVEN) clean install -DskipTests
+	$(MAVEN) clean install
 
 test: ## Run unit tests
 	$(MAVEN) test
@@ -27,6 +27,11 @@ checkstyle: ## Run Checkstyle
 
 coverage: ## Generate JaCoCo coverage report
 	$(MAVEN) test jacoco:report
+
+coverage-aggregate: ## Generate aggregated coverage across all modules
+	$(MAVEN) verify -pl evcharging-app -am
+	@echo ""
+	@echo "Aggregate report: evcharging-app/target/site/jacoco-aggregate/index.html"
 
 archunit: ## Run architecture tests only
 	$(MAVEN) test -pl evcharging-app -Dtest="ArchitectureTest"

@@ -464,7 +464,7 @@
                 </executions>
             </plugin>
 
-            <!-- JaCoCo (aggregate coverage) -->
+            <!-- JaCoCo -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
